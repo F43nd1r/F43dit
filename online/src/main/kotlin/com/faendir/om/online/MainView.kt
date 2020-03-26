@@ -88,7 +88,9 @@ class MainView : FlexLayout() {
                             ui.ifPresent {
                                 it.access {
                                     dialog.removeAll()
-                                    dialog.add(Text(result.reports.joinToString("\n") { it.exception?.toString() ?: it.message }))
+                                    val reportString = result.reports.joinToString("\n") { it.exception?.toString() ?: it.message }
+                                    dialog.add(Text(reportString))
+                                    println(reportString)
                                 }
                             }
                         }

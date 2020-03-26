@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.faendir.om"
-version = "1.0.0"
+version = "1.0.1"
 
 repositories {
     mavenCentral()
@@ -26,3 +26,46 @@ tasks {
     }
 }
 
+publishing {
+    repositories {
+        mavenLocal()
+        maven {
+            setUrl("https://api.bintray.com/maven/f43nd1r/maven/scriptdef/;publish=1")
+            name = "bintray"
+            credentials {
+                username = findProperty("artifactoryUser") as String?
+                password = findProperty("artifactoryApiKey") as String?
+            }
+        }
+    }
+    publications {
+        create<MavenPublication>("maven") {
+            from(components["kotlin"])
+            pom {
+                name.set("scriptdef")
+                description.set("Opus Magnum Solution Script Definition")
+                url.set("https://github.com/F43nd1r/omsekt")
+
+                scm {
+                    connection.set("scm:git:https://github.com/F43nd1r/omsekt.git")
+                    developerConnection.set("scm:git:git@github.com:F43nd1r/omsekt.git")
+                    url.set("https://github.com/F43nd1r/omsekt.git")
+                }
+
+                licenses {
+                    license {
+                        name.set("The Apache License, Version 2.0")
+                        distribution.set("repo")
+                    }
+                }
+
+                developers {
+                    developer {
+                        id.set("f43nd1r")
+                        name.set("Lukas Morawietz")
+                    }
+                }
+            }
+        }
+    }
+}

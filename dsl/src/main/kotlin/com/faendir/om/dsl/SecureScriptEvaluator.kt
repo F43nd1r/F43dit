@@ -11,10 +11,7 @@ import kotlin.script.experimental.jvm.impl.getConfigurationWithClassloader
 
 class SecureScriptEvaluator(private val scriptSecurityContext: AccessControlContext, private val classLoader: ClassLoader) : ScriptEvaluator {
 
-    override suspend operator fun invoke(
-        compiledScript: CompiledScript<*>,
-        scriptEvaluationConfiguration: ScriptEvaluationConfiguration
-    ): ResultWithDiagnostics<EvaluationResult> = try {
+    override suspend operator fun invoke(compiledScript: CompiledScript<*>, scriptEvaluationConfiguration: ScriptEvaluationConfiguration): ResultWithDiagnostics<EvaluationResult> = try {
         val configuration = getConfigurationWithClassloader(compiledScript, scriptEvaluationConfiguration)
 
         val saveClassLoader = Thread.currentThread().contextClassLoader

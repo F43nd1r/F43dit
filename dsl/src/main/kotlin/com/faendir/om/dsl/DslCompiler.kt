@@ -9,10 +9,8 @@ import kotlin.script.experimental.api.ResultValue
 import kotlin.script.experimental.api.ResultWithDiagnostics
 import kotlin.script.experimental.api.onSuccess
 import kotlin.script.experimental.host.toScriptSource
-import kotlin.script.experimental.jvm.baseClassLoader
-import kotlin.script.experimental.jvm.dependenciesFromCurrentContext
-import kotlin.script.experimental.jvm.jvm
-import kotlin.script.experimental.jvm.loadDependencies
+import kotlin.script.experimental.jvm.*
+import kotlin.script.experimental.jvm.util.classpathFromClass
 import kotlin.script.experimental.jvmhost.BasicJvmScriptingHost
 import kotlin.script.experimental.jvmhost.createJvmCompilationConfigurationFromTemplate
 import kotlin.script.experimental.jvmhost.createJvmEvaluationConfigurationFromTemplate
@@ -37,7 +35,8 @@ object DslCompiler {
         AccessController.doPrivileged(PrivilegedAction {
             createJvmCompilationConfigurationFromTemplate<OmScript> {
                 jvm {
-                    dependenciesFromCurrentContext(wholeClasspath = true)
+                    dependenciesFromCurrentContext(wholeClasspath = true, unpackJarCollections = true)
+                    updateClasspath(classpathFromClass(OmScript::class))
                 }
             }
         })
