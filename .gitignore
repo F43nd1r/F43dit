@@ -7,3 +7,6 @@
 /online/.gradle/
 /online/build/
 /scriptdef/build/
+
+.idea
+target
