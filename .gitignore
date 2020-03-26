@@ -1,0 +1,9 @@
+# Project exclude paths
+/.gradle/
+/build/
+/dsl/build/
+/main/build/
+/node_modules/
+/online/.gradle/
+/online/build/
+/scriptdef/build/
