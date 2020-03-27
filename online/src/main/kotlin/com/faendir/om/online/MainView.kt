@@ -19,7 +19,9 @@ import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer
 import com.vaadin.flow.router.Route
+import com.vaadin.flow.server.InitialPageSettings
 import com.vaadin.flow.server.InputStreamFactory
+import com.vaadin.flow.server.PageConfigurator
 import com.vaadin.flow.server.StreamResource
 import com.vaadin.flow.spring.annotation.SpringComponent
 import com.vaadin.flow.spring.annotation.UIScope
@@ -30,20 +32,23 @@ import kotlinx.io.streams.asInput
 import kotlinx.io.streams.asOutput
 import java.io.ByteArrayInputStream
 import java.io.ByteArrayOutputStream
+import java.security.PrivilegedActionException
 import kotlin.script.experimental.api.valueOrNull
 
 @UIScope
 @SpringComponent
 @Push
 @Route("")
-class MainView : FlexLayout() {
+class MainView : FlexLayout(), PageConfigurator {
     var currentFileName: String = "generated.solution"
 
     init {
         setSizeFull()
         val editor = JuicyAceEditor()
+        editor.element.style["font"] = "monospace"
         editor.element.setAttribute("mode", "ace/mode/kotlin")
         editor.setTheme(JuicyAceTheme.ambiance)
+        editor.setFontsize(16)
         editor.setHeightFull()
         expand(editor)
         val sidebar = VerticalLayout()
@@ -85,12 +90,15 @@ class MainView : FlexLayout() {
                                 }
                             }
                         } else {
-                            ui.ifPresent {
-                                it.access {
+                            ui.ifPresent { ui ->
+                                ui.access {
                                     dialog.removeAll()
-                                    val reportString = result.reports.joinToString("\n") { it.exception?.toString() ?: it.message }
-                                    dialog.add(Text(reportString))
-                                    println(reportString)
+                                    if (result.reports.any { it.exception is PrivilegedActionException }) {
+                                        dialog.add(Text("Illegal action in script."))
+                                    } else {
+                                        dialog.add(Text("Something went wrong while generating your solution."))
+                                    }
+                                    println(result.reports.joinToString("\n") { it.exception?.toString() ?: it.message })
                                 }
                             }
                         }
@@ -113,5 +121,13 @@ class MainView : FlexLayout() {
     override fun onAttach(attachEvent: AttachEvent?) {
         ui.orElse(null)?.element?.setAttribute("theme", Lumo.DARK)
         super.onAttach(attachEvent)
+    }
+
+    override fun configurePage(settings: InitialPageSettings) {
+        settings.loadingIndicatorConfiguration.apply {
+            firstDelay = 2000
+            secondDelay = 5000
+            thirdDelay = 10000
+        }
     }
 }

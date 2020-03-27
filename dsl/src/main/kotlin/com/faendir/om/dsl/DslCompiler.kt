@@ -7,6 +7,7 @@ import java.security.*
 import java.security.cert.Certificate
 import kotlin.script.experimental.api.ResultValue
 import kotlin.script.experimental.api.ResultWithDiagnostics
+import kotlin.script.experimental.api.ScriptDiagnostic
 import kotlin.script.experimental.api.onSuccess
 import kotlin.script.experimental.host.toScriptSource
 import kotlin.script.experimental.jvm.*
@@ -60,6 +61,12 @@ object DslCompiler {
             }
         })
         val result = compiled.onSuccess { runBlocking { host.evaluator.invoke(it, evaluationConfiguration) } }
-        return result.onSuccess { ResultWithDiagnostics.Success((it.returnValue as ResultValue.Value).value as Solution) }
+        return result.onSuccess {
+            when(val returnValue = it.returnValue) {
+                is ResultValue.Value -> ResultWithDiagnostics.Success(returnValue.value as Solution)
+                is ResultValue.Error -> ResultWithDiagnostics.Failure(listOf(ScriptDiagnostic("Evaluation failed", severity = ScriptDiagnostic.Severity.ERROR, exception = returnValue.error)))
+                else -> ResultWithDiagnostics.Failure(listOf(ScriptDiagnostic("Unknown eval result", severity = ScriptDiagnostic.Severity.ERROR)))
+            }
+        }
     }
 }
