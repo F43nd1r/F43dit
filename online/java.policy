@@ -1,4 +1,16 @@
 grant {
-    permission java.security.AllPermission;
     permission java.util.PropertyPermission "*", "read,write";
+    permission java.net.SocketPermission "localhost", "accept,connect,listen,resolve";
+    permission java.net.SocketPermission "172.17.0.1", "accept,connect,listen,resolve";
+    permission java.io.FilePermission "<<ALL FILES>>", "read,write,delete,execute";
+    permission java.lang.reflect.ReflectPermission "*";
+    permission java.lang.RuntimePermission "*";
+    permission javax.management.MBeanServerPermission "*";
+    permission javax.management.MBeanPermission "*", "*";
+    permission javax.management.MBeanTrustPermission "*";
+    permission javax.security.auth.AuthPermission "*";
+    permission java.security.SecurityPermission "*";
+    permission java.io.SerializablePermission "*";
+    permission java.net.NetPermission "*";
+    permission com.faendir.om.dsl.ClassLoadingPermission "*";
 };

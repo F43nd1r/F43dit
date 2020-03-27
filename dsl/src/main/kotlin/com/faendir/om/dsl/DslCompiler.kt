@@ -23,6 +23,8 @@ object DslCompiler {
         add(ClassLoadingPermission("kotlin.jvm.functions.*"))
         add(ClassLoadingPermission("kotlin.Unit"))
         add(ClassLoadingPermission("kotlin.collections.*"))
+        //java
+        add(ClassLoadingPermission("java.util.*"))
         //api
         add(ClassLoadingPermission("com.faendir.om.sp.part.*"))
         add(ClassLoadingPermission("com.faendir.om.dsl.api.*"))

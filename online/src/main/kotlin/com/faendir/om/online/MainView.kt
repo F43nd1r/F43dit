@@ -1,7 +1,8 @@
 package com.faendir.om.online
 
-import com.faendir.om.dsl.DslCompiler
 import com.faendir.om.dsl.DslGenerator
+import com.faendir.om.online.remote.RemoteResult
+import com.faendir.om.online.remote.RemoteServer
 import com.faendir.om.sp.SolutionParser
 import com.juicy.JuicyAceEditor
 import com.juicy.theme.JuicyAceTheme
@@ -19,28 +20,21 @@ import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer
 import com.vaadin.flow.router.Route
-import com.vaadin.flow.server.InitialPageSettings
-import com.vaadin.flow.server.InputStreamFactory
-import com.vaadin.flow.server.PageConfigurator
-import com.vaadin.flow.server.StreamResource
+import com.vaadin.flow.server.*
 import com.vaadin.flow.spring.annotation.SpringComponent
 import com.vaadin.flow.spring.annotation.UIScope
 import com.vaadin.flow.theme.lumo.Lumo
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 import kotlinx.io.streams.asInput
-import kotlinx.io.streams.asOutput
 import java.io.ByteArrayInputStream
-import java.io.ByteArrayOutputStream
 import java.security.PrivilegedActionException
-import kotlin.script.experimental.api.valueOrNull
+import java.util.concurrent.TimeoutException
 
 @UIScope
 @SpringComponent
 @Push
 @Route("")
 class MainView : FlexLayout(), PageConfigurator {
-    var currentFileName: String = "generated.solution"
+    private var currentFileName: String = "generated.solution"
 
     init {
         setSizeFull()
@@ -69,46 +63,61 @@ class MainView : FlexLayout(), PageConfigurator {
         val downloadDialog = Button("Download solution...") {
             val dialog = Dialog(Text("Please wait while your solution is generated"), ProgressBar().apply { isIndeterminate = true })
             dialog.open()
-            GlobalScope.launch {
-                if (editor.value == null) {
+            val session = VaadinSession.getCurrent()
+            when {
+                editor.value == null -> {
                     dialog.removeAll()
                     dialog.add(Text("Your solution is empty."))
-                } else {
-                    try {
-                        val result = DslCompiler.fromDsl(editor.value)
-                        val solution = result.valueOrNull()
-                        if (solution != null) {
-                            val out = ByteArrayOutputStream()
-                            SolutionParser.write(solution, out.asOutput())
+                }
+                session.getAttribute(HasActiveRequestMarker::class.java) != null -> {
+                    dialog.removeAll()
+                    dialog.add(Text("Only one request per user at the same time allowed."))
+                }
+                else -> {
+                    session.setAttribute(HasActiveRequestMarker::class.java, HasActiveRequestMarker)
+                    RemoteServer.fromDsl(editor.value) { result ->
+                        try {
+                            when (result) {
+                                is RemoteResult.Success -> {
+                                    val solution = result.value
+                                    ui.ifPresent {
+                                        it.access {
+                                            val download = Anchor(StreamResource(currentFileName, InputStreamFactory { ByteArrayInputStream(solution) }), "")
+                                            download.add(Button("Download") { dialog.close() }.apply { setWidthFull() })
+                                            download.element.setAttribute("download", true)
+                                            dialog.removeAll()
+                                            dialog.add(download)
+                                        }
+                                    }
+                                }
+                                is RemoteResult.Failure -> {
+                                    ui.ifPresent { ui ->
+                                        ui.access {
+                                            dialog.removeAll()
+                                            dialog.add(
+                                                Text(
+                                                    when (result.exception) {
+                                                        is PrivilegedActionException -> "Illegal action in script."
+                                                        is TimeoutException -> "Solution generation timed out."
+                                                        is SyntaxException -> "Syntax error: ${result.exception.message} in line ${result.exception.line}"
+                                                        else -> "Something went wrong while generating your solution."
+                                                    }
+                                                )
+                                            )
+                                        }
+                                    }
+                                }
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
                             ui.ifPresent {
                                 it.access {
-                                    val download = Anchor(StreamResource(currentFileName, InputStreamFactory { ByteArrayInputStream(out.toByteArray()) }), "")
-                                    download.add(Button("Download") { dialog.close() }.apply { setWidthFull() })
-                                    download.element.setAttribute("download", true)
                                     dialog.removeAll()
-                                    dialog.add(download)
+                                    dialog.add(Text("Something went wrong while generating your solution."))
                                 }
                             }
-                        } else {
-                            ui.ifPresent { ui ->
-                                ui.access {
-                                    dialog.removeAll()
-                                    if (result.reports.any { it.exception is PrivilegedActionException }) {
-                                        dialog.add(Text("Illegal action in script."))
-                                    } else {
-                                        dialog.add(Text("Something went wrong while generating your solution."))
-                                    }
-                                    println(result.reports.joinToString("\n") { it.exception?.toString() ?: it.message })
-                                }
-                            }
-                        }
-                    } catch (e: Exception) {
-                        e.printStackTrace()
-                        ui.ifPresent {
-                            it.access {
-                                dialog.removeAll()
-                                dialog.add(Text("Something went wrong while generating your solution."))
-                            }
+                        } finally {
+                            session.access { session.setAttribute(HasActiveRequestMarker::class.java, null) }
                         }
                     }
                 }
@@ -131,3 +140,5 @@ class MainView : FlexLayout(), PageConfigurator {
         }
     }
 }
+
+object HasActiveRequestMarker
