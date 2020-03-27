@@ -11,6 +11,7 @@ import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.html.Anchor
+import com.vaadin.flow.component.html.Div
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.component.orderedlayout.FlexLayout
@@ -19,6 +20,7 @@ import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer
+import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
 import com.vaadin.flow.server.*
 import com.vaadin.flow.spring.annotation.SpringComponent
@@ -29,6 +31,7 @@ import java.io.ByteArrayInputStream
 import java.security.PrivilegedActionException
 import java.util.concurrent.TimeoutException
 
+@PageTitle("Omsekt")
 @UIScope
 @SpringComponent
 @Push
@@ -45,9 +48,6 @@ class MainView : FlexLayout(), PageConfigurator {
         editor.setFontsize(16)
         editor.setHeightFull()
         expand(editor)
-        val sidebar = VerticalLayout()
-        sidebar.setHeightFull()
-        sidebar.width = null
         val buffer = MemoryBuffer()
         val upload = Upload(buffer)
         upload.addFinishedListener {
@@ -59,7 +59,6 @@ class MainView : FlexLayout(), PageConfigurator {
                 Notification.show("Failed to parse file.").addThemeVariants(NotificationVariant.LUMO_ERROR)
             }
         }
-        sidebar.add(upload)
         val downloadDialog = Button("Download solution...") {
             val dialog = Dialog(Text("Please wait while your solution is generated"), ProgressBar().apply { isIndeterminate = true })
             dialog.open()
@@ -123,7 +122,13 @@ class MainView : FlexLayout(), PageConfigurator {
                 }
             }
         }
-        sidebar.add(downloadDialog)
+        downloadDialog.setWidthFull()
+        val help = Anchor("https://github.com/F43nd1r/omsekt/wiki/File-definition", "Reference")
+        val spacer = Div()
+        val sidebar = VerticalLayout(upload, downloadDialog, spacer, help)
+        sidebar.expand(spacer)
+        sidebar.setHeightFull()
+        sidebar.width = null
         add(sidebar, editor)
     }
 
