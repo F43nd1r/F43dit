@@ -9,7 +9,13 @@ abstract class OmScript
 
 object ScriptConfiguration : ScriptCompilationConfiguration(
     {
-        defaultImports("com.faendir.om.sp.part.*", "com.faendir.om.dsl.api.*")
+        defaultImports(
+            "com.faendir.om.sp.part.*",
+            "com.faendir.om.dsl.api.*",
+            "com.faendir.om.sp.part.ArmType.*",
+            "com.faendir.om.sp.part.GlyphType.*",
+            "com.faendir.om.sp.part.IOType.*"
+        )
         ide {
             acceptedLocations(ScriptAcceptedLocation.Everywhere)
         }

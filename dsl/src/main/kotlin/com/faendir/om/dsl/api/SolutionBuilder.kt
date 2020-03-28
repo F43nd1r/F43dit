@@ -23,7 +23,7 @@ class SolutionBuilder(var puzzle: String = "", var name: String = "", internal v
 
     @OmDsl
     fun arm(type: ArmType, initializer: Arm.() -> Unit) {
-        val arm = Arm(0, 0 to 0, 0, 1, emptyList(), type)
+        val arm = Arm((parts.map { it.number }.max() ?: 0) + 1, 0 to 0, 0, 1, emptyList(), type)
         arm.initializer()
         parts += arm
     }

@@ -12,7 +12,7 @@ object DslGenerator {
         val parts = solution.parts.joinToString("\n") { part ->
             when (part) {
                 is Arm -> """
-                        arm(ArmType.${part.type.name}) {
+                        arm(${part.type.name}) {
                             number = ${part.number}
                             position = ${part.position.x} to ${part.position.y}
                             rotation = ${part.rotation}
@@ -20,13 +20,13 @@ object DslGenerator {
                         }
                     """
                 is Glyph -> """
-                    glyph(GlyphType.${part.type.name}) {
+                    glyph(${part.type.name}) {
                         position = ${part.position.x} to ${part.position.y}
                         rotation = ${part.rotation}
                     }
                 """
                 is IO -> """
-                    io(IOType.${part.type.name}) {
+                    io(${part.type.name}) {
                         position = ${part.position.x} to ${part.position.y}
                         rotation = ${part.rotation}
                     }

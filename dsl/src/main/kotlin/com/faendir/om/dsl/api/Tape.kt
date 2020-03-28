@@ -102,7 +102,7 @@ class Tape(private val solution: SolutionBuilder) {
     fun save() {
         val instructions = mutableMapOf<Int, MutableList<Action>>()
         val arms = getSteps().map { it.moves.keys.max() ?: 0 }.max() ?: 0
-        for (arm in 0..arms) {
+        for (arm in 1..arms) {
             instructions[arm] = mutableListOf()
         }
         getSteps().forEach {
