@@ -61,6 +61,7 @@ class MainView : FlexLayout(), PageConfigurator {
         }
         val downloadDialog = Button("Download solution...") {
             val dialog = Dialog(Text("Please wait while your solution is generated"), ProgressBar().apply { isIndeterminate = true })
+            dialog.isCloseOnOutsideClick = false
             dialog.open()
             val session = VaadinSession.getCurrent()
             when {
