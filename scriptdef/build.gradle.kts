@@ -26,6 +26,11 @@ tasks {
     }
 }
 
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.getByName("main").allSource)
+}
+
 publishing {
     repositories {
         mavenLocal()
@@ -41,6 +46,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["kotlin"])
+            artifact(sourcesJar)
             pom {
                 name.set("scriptdef")
                 description.set("Opus Magnum Solution Script Definition")

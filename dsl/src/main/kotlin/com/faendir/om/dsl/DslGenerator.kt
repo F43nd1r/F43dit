@@ -1,10 +1,7 @@
 package com.faendir.om.dsl
 
 import com.faendir.om.sp.base.Action
-import com.faendir.om.sp.part.Arm
-import com.faendir.om.sp.part.Glyph
-import com.faendir.om.sp.part.IO
-import com.faendir.om.sp.part.Track
+import com.faendir.om.sp.part.*
 import com.faendir.om.sp.solution.Solution
 
 object DslGenerator {
@@ -33,6 +30,13 @@ object DslGenerator {
                 """
                 is Track -> """
                     track {
+                        position = ${part.position.x} to ${part.position.y}
+                        positions = listOf(${part.positions.joinToString(", ") { "${it.x} to ${it.y}" }})
+                    }
+                """
+                is Conduit -> """
+                    conduit {
+                        id = ${part.id}
                         position = ${part.position.x} to ${part.position.y}
                         positions = listOf(${part.positions.joinToString(", ") { "${it.x} to ${it.y}" }})
                     }

@@ -50,6 +50,13 @@ class SolutionBuilder(var puzzle: String = "", var name: String = "", internal v
     }
 
     @OmDsl
+    fun conduit(initializer: Conduit.() -> Unit) {
+        val conduit = Conduit(0 to 0, 100, listOf(0 to 0))
+        conduit.initializer()
+        parts += conduit
+    }
+
+    @OmDsl
     fun tape(initializer: Tape.() -> Unit) {
         val tape = Tape(this)
         tape.apply(initializer)
