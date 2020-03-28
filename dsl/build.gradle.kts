@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.faendir.om"
-version = "1.0.4"
+version = "1.0.5"
 
 repositories {
     jcenter()
@@ -28,6 +28,11 @@ tasks {
     }
 }
 
+val sourcesJar by tasks.creating(Jar::class) {
+    archiveClassifier.set("sources")
+    from(sourceSets.getByName("main").allSource)
+}
+
 publishing {
     repositories {
         mavenLocal()
@@ -43,6 +48,7 @@ publishing {
     publications {
         create<MavenPublication>("maven") {
             from(components["kotlin"])
+            artifact(sourcesJar)
             pom {
                 name.set("dsl")
                 description.set("Opus Magnum Solution Dsl")
