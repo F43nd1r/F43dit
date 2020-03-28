@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.faendir.om"
-version = "1.0.5"
+version = "1.0.7"
 
 repositories {
     jcenter()

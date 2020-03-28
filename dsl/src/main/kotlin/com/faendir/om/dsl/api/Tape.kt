@@ -37,6 +37,10 @@ class Tape(private val solution: SolutionBuilder) {
         wait(max(steps.size, subTapes.filter { it.first == tape }.map { it.first.getLength() + it.second }.max() ?: 0) - steps.size)
     }
 
+    fun waitAlmostCompleteOn(tape: Tape, overlap: Int) {
+        wait(max(steps.size, subTapes.filter { it.first == tape }.map { it.first.getLength() + it.second }.max() ?: 0) - steps.size - overlap)
+    }
+
     @JvmName("wait0")
     fun wait() {
         steps.add(Step())
@@ -98,7 +102,7 @@ class Tape(private val solution: SolutionBuilder) {
     fun save() {
         val instructions = mutableMapOf<Int, MutableList<Action>>()
         val arms = getSteps().map { it.moves.keys.max() ?: 0 }.max() ?: 0
-        for (arm in 0 until arms) {
+        for (arm in 0..arms) {
             instructions[arm] = mutableListOf()
         }
         getSteps().forEach {
@@ -122,7 +126,6 @@ class Step(val moves: MutableMap<Int, Action> = mutableMapOf()) {
                 moves[arm] = action
             }
         }
-        moves.putAll(other.moves)
     }
 }
 
