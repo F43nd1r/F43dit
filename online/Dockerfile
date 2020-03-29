@@ -1,6 +1,5 @@
 FROM openjdk:13-slim
-RUN groupadd spring && useradd spring -g spring
-USER spring:spring
+VOLUME /tmp
 ARG DEPENDENCY=build/dependency
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY ${DEPENDENCY}/META-INF /app/META-INF

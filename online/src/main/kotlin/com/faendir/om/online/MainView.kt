@@ -12,6 +12,7 @@ import com.vaadin.flow.component.button.Button
 import com.vaadin.flow.component.dialog.Dialog
 import com.vaadin.flow.component.html.Anchor
 import com.vaadin.flow.component.html.Div
+import com.vaadin.flow.component.html.Image
 import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.component.orderedlayout.FlexLayout
@@ -31,7 +32,7 @@ import java.io.ByteArrayInputStream
 import java.security.PrivilegedActionException
 import java.util.concurrent.TimeoutException
 
-@PageTitle("Omsekt")
+@PageTitle("F43dit")
 @UIScope
 @SpringComponent
 @Push
@@ -48,14 +49,18 @@ class MainView : FlexLayout(), PageConfigurator {
         editor.setFontsize(16)
         editor.setHeightFull()
         expand(editor)
+        val logo = Image("logo.png", "F43dit")
         val buffer = MemoryBuffer()
         val upload = Upload(buffer)
+        upload.setWidthFull()
+        upload.style["box-sizing"] = "border-box"
         upload.addFinishedListener {
             try {
                 val solution = SolutionParser.parse(buffer.inputStream.asInput())
                 editor.value = DslGenerator.toDsl(solution)
                 currentFileName = it.fileName
             } catch (e: Exception) {
+                e.printStackTrace()
                 Notification.show("Failed to parse file.").addThemeVariants(NotificationVariant.LUMO_ERROR)
             }
         }
@@ -126,7 +131,7 @@ class MainView : FlexLayout(), PageConfigurator {
         downloadDialog.setWidthFull()
         val help = Anchor("https://github.com/F43nd1r/omsekt/wiki/File-definition", "Reference")
         val spacer = Div()
-        val sidebar = VerticalLayout(upload, downloadDialog, spacer, help)
+        val sidebar = VerticalLayout(logo, upload, downloadDialog, spacer, help)
         sidebar.expand(spacer)
         sidebar.setHeightFull()
         sidebar.width = null
