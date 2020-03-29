@@ -4,7 +4,7 @@ plugins {
 }
 
 group = "com.faendir.om"
-version = "1.1.2"
+version = "1.1.3"
 
 repositories {
     jcenter()
@@ -12,7 +12,7 @@ repositories {
 }
 
 dependencies {
-    api("com.faendir.om:omsp:1.3.3")
+    api("com.faendir.om:omsp:1.3.4")
     implementation("com.faendir.om:scriptdef:1.0.2")
     implementation(kotlin("stdlib-jdk8"))
     api(kotlin("scripting-jvm-host"))

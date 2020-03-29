@@ -38,7 +38,7 @@ object DslGenerator {
                     conduit {
                         id = ${part.id}
                         position = ${part.position.x} to ${part.position.y}
-                        positions = listOf(${part.positions.joinToString(", ") { "${it.x} to ${it.y}" }})
+                        rotation = ${part.rotation}
                     }
                 """
                 else -> throw IllegalArgumentException("Unknown part type $part")
