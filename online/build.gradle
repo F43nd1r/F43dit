@@ -1,8 +1,9 @@
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.3.71"
+    id 'org.jetbrains.kotlin.jvm'
     id 'org.springframework.boot' version '2.2.6.RELEASE'
-    id("com.devsoap.vaadin-flow") version "1.4"
+    id 'com.devsoap.vaadin-flow' version "1.4"
     id 'io.spring.dependency-management' version '1.0.7.RELEASE'
+    id 'com.palantir.docker' version '0.25.0'
 }
 
 group = "com.faendir.om.sekt"
@@ -46,4 +47,10 @@ task unpackBootJar(type: Copy) {
     from zipTree(bootJar.outputs.files[0])
     into file("$buildDir/dependency")
     dependsOn bootJar
+}
+
+docker {
+    name = "f43nd1r/omsekt:latest"
+    files unpackBootJar.outputs, "java.policy"
+    dependsOn unpackBootJar
 }

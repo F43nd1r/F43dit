@@ -1,6 +1,6 @@
 FROM openjdk:13-slim
 VOLUME /tmp
-ARG DEPENDENCY=build/dependency
+ARG DEPENDENCY=.
 COPY ${DEPENDENCY}/BOOT-INF/lib /app/lib
 COPY ${DEPENDENCY}/META-INF /app/META-INF
 COPY ${DEPENDENCY}/BOOT-INF/classes /app
