@@ -39,10 +39,11 @@ import java.util.concurrent.TimeoutException
 @Route("")
 class MainView : FlexLayout(), PageConfigurator {
     private var currentFileName: String = "generated.solution"
+    private val editor = JuicyAceEditor()
+    private val downloadText = Anchor()
 
     init {
         setSizeFull()
-        val editor = JuicyAceEditor()
         editor.element.style["font"] = "monospace"
         editor.element.setAttribute("mode", "ace/mode/kotlin")
         editor.setTheme(JuicyAceTheme.ambiance)
@@ -56,9 +57,15 @@ class MainView : FlexLayout(), PageConfigurator {
         upload.style["box-sizing"] = "border-box"
         upload.addFinishedListener {
             try {
-                val solution = SolutionParser.parse(buffer.inputStream.asInput())
-                editor.value = DslGenerator.toDsl(solution)
-                currentFileName = it.fileName
+                if (it.fileName.endsWith(".solution")) {
+                    val solution = SolutionParser.parse(buffer.inputStream.asInput())
+                    editor.value = DslGenerator.toDsl(solution)
+                    currentFileName = it.fileName
+                } else if (it.fileName.endsWith(".solution.kts")) {
+                    editor.value = buffer.inputStream.bufferedReader().readText()
+                    currentFileName = it.fileName.removeSuffix(".kts")
+                }
+                updateDownloadText()
             } catch (e: Exception) {
                 e.printStackTrace()
                 Notification.show("Failed to parse file.").addThemeVariants(NotificationVariant.LUMO_ERROR)
@@ -129,13 +136,20 @@ class MainView : FlexLayout(), PageConfigurator {
             }
         }
         downloadDialog.setWidthFull()
+        downloadText.setWidthFull()
+        downloadText.add(Button("Download text").apply { setWidthFull() })
+        updateDownloadText()
         val help = Anchor("https://github.com/F43nd1r/omsekt/wiki/File-definition", "Reference")
         val spacer = Div()
-        val sidebar = VerticalLayout(logo, upload, downloadDialog, spacer, help)
+        val sidebar = VerticalLayout(logo, upload, downloadDialog, downloadText, spacer, help)
         sidebar.expand(spacer)
         sidebar.setHeightFull()
         sidebar.width = null
         add(sidebar, editor)
+    }
+
+    private fun updateDownloadText() {
+        downloadText.setHref(StreamResource("$currentFileName.kts", InputStreamFactory { ByteArrayInputStream(editor.value.toByteArray()) }))
     }
 
     override fun onAttach(attachEvent: AttachEvent?) {
