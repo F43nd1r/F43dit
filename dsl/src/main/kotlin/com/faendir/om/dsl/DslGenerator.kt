@@ -6,7 +6,24 @@ import com.faendir.om.sp.solution.Solution
 
 object DslGenerator {
     fun toDsl(solution: Solution): String {
-        val parts = solution.parts.joinToString("\n") { part ->
+        val parts = solution.parts.sortedWith(compareBy({
+            when (it) {
+                is Arm -> 0
+                is Glyph -> 1
+                is IO -> 2
+                is Track -> 3
+                is Conduit -> 4
+                else -> 5
+            }
+        }, {
+            when (it) {
+                is Arm -> it.number
+                is Glyph -> it.type.ordinal
+                is IO -> it.index
+                is Conduit -> it.id
+                else -> 0
+            }
+        })).joinToString("\n") { part ->
             when (part) {
                 is Arm -> """
                         arm(${part.type.name}) {
@@ -44,7 +61,7 @@ object DslGenerator {
                 else -> throw IllegalArgumentException("Unknown part type $part")
             }.trimIndent()
         }
-        val tape =  solution.parts.filterIsInstance<Arm>().joinToString(", ", "parallel(", ")") {
+        val tape = solution.parts.filterIsInstance<Arm>().joinToString(", ", "parallel(", ")") {
             """
 {
     sequence(${it.number}) {
