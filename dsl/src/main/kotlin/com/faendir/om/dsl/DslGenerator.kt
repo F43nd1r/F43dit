@@ -41,6 +41,7 @@ object DslGenerator {
                 """
                 is IO -> """
                     io(${part.type.name}) {
+                        index = ${part.index}
                         position = ${part.position.x} to ${part.position.y}
                         rotation = ${part.rotation}
                     }
