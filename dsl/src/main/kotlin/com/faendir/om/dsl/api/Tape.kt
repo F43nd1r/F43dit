@@ -1,8 +1,8 @@
 package com.faendir.om.dsl.api
 
 import com.faendir.om.dsl.OmDsl
-import com.faendir.om.sp.base.Action
-import com.faendir.om.sp.part.Arm
+import com.faendir.om.parser.solution.model.Action
+import com.faendir.om.parser.solution.model.part.Arm
 import kotlin.jvm.JvmName
 import kotlin.math.max
 
@@ -34,11 +34,11 @@ class Tape(private val solution: SolutionBuilder) {
     }
 
     fun waitCompleteOn(tape: Tape) {
-        wait(max(steps.size, subTapes.filter { it.first == tape }.map { it.first.getLength() + it.second }.max() ?: 0) - steps.size)
+        wait(max(steps.size, subTapes.filter { it.first == tape }.map { it.first.getLength() + it.second }.maxOrNull() ?: 0) - steps.size)
     }
 
     fun waitAlmostCompleteOn(tape: Tape, overlap: Int) {
-        wait(max(steps.size, subTapes.filter { it.first == tape }.map { it.first.getLength() + it.second }.max() ?: 0) - steps.size - overlap)
+        wait(max(steps.size, subTapes.filter { it.first == tape }.map { it.first.getLength() + it.second }.maxOrNull() ?: 0) - steps.size - overlap)
     }
 
     @JvmName("wait0")
@@ -51,7 +51,7 @@ class Tape(private val solution: SolutionBuilder) {
     }
 
     fun getLength(): Int {
-        return max(steps.size, subTapes.map { it.first.getLength() + it.second }.max() ?: 0)
+        return max(steps.size, subTapes.map { it.first.getLength() + it.second }.maxOrNull() ?: 0)
     }
 
     @OmDsl
@@ -101,7 +101,7 @@ class Tape(private val solution: SolutionBuilder) {
 
     fun save() {
         val instructions = mutableMapOf<Int, MutableList<Action>>()
-        val arms = getSteps().map { it.moves.keys.max() ?: 0 }.max() ?: 0
+        val arms = getSteps().map { it.moves.keys.maxOrNull() ?: 0 }.maxOrNull() ?: 0
         for (arm in 1..arms) {
             instructions[arm] = mutableListOf()
         }

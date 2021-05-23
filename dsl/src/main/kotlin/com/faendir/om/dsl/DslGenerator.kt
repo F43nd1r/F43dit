@@ -1,8 +1,9 @@
 package com.faendir.om.dsl
 
-import com.faendir.om.sp.base.Action
-import com.faendir.om.sp.part.*
-import com.faendir.om.sp.solution.Solution
+import com.faendir.om.parser.solution.model.Action
+import com.faendir.om.parser.solution.model.Solution
+import com.faendir.om.parser.solution.model.part.*
+
 
 object DslGenerator {
     fun toDsl(solution: Solution): String {

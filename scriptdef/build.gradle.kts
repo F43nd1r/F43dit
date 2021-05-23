@@ -1,52 +1,19 @@
 plugins {
-    kotlin("jvm")
-    `maven-publish`
+    kotlin
+    `publish-maven`
 }
 
-group = "com.faendir.om"
-version = "1.0.2"
-
-repositories {
-    mavenCentral()
-}
+version = "1.1.0"
 
 dependencies {
-    implementation(kotlin("stdlib-jdk8"))
     implementation(kotlin("scripting-jvm"))
     implementation(kotlin("script-util"))
     implementation(kotlin("compiler"))
 }
 
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-}
-
-val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.getByName("main").allSource)
-}
-
 publishing {
-    repositories {
-        mavenLocal()
-        maven {
-            setUrl("https://api.bintray.com/maven/f43nd1r/maven/scriptdef/;publish=1")
-            name = "bintray"
-            credentials {
-                username = findProperty("artifactoryUser") as String?
-                password = findProperty("artifactoryApiKey") as String?
-            }
-        }
-    }
     publications {
-        create<MavenPublication>("maven") {
-            from(components["kotlin"])
-            artifact(sourcesJar)
+        getByName<MavenPublication>("maven") {
             pom {
                 name.set("scriptdef")
                 description.set("Opus Magnum Solution Script Definition")

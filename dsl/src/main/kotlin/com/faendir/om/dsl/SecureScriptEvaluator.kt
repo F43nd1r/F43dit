@@ -7,53 +7,52 @@ import java.security.AccessController
 import java.security.PrivilegedAction
 import kotlin.reflect.KClass
 import kotlin.script.experimental.api.*
-import kotlin.script.experimental.jvm.impl.getConfigurationWithClassloader
 
 class SecureScriptEvaluator(private val scriptSecurityContext: AccessControlContext, private val classLoader: ClassLoader) : ScriptEvaluator {
 
-    override suspend operator fun invoke(compiledScript: CompiledScript<*>, scriptEvaluationConfiguration: ScriptEvaluationConfiguration): ResultWithDiagnostics<EvaluationResult> = try {
-        val configuration = getConfigurationWithClassloader(compiledScript, scriptEvaluationConfiguration)
+    override suspend operator fun invoke(compiledScript: CompiledScript, scriptEvaluationConfiguration: ScriptEvaluationConfiguration): ResultWithDiagnostics<EvaluationResult> {
+        return try {
+            val saveClassLoader = Thread.currentThread().contextClassLoader
+            Thread.currentThread().contextClassLoader = classLoader
+            val clazz = try {
+                AccessController.doPrivileged(PrivilegedAction {
+                    runBlocking { compiledScript.getClass(scriptEvaluationConfiguration) }
+                }, scriptSecurityContext)
+            } finally {
+                Thread.currentThread().contextClassLoader = saveClassLoader
+            }
+            clazz.onSuccess { scriptClass ->
 
-        val saveClassLoader = Thread.currentThread().contextClassLoader
-        Thread.currentThread().contextClassLoader = classLoader
-        val clazz = try {
-            AccessController.doPrivileged(PrivilegedAction {
-                runBlocking { compiledScript.getClass(configuration) }
-            }, scriptSecurityContext)
-        } finally {
-            Thread.currentThread().contextClassLoader = saveClassLoader
-        }
-        clazz.onSuccess { scriptClass ->
+                compiledScript.otherScripts.mapSuccess {
+                    invoke(it, scriptEvaluationConfiguration)
+                }.onSuccess { importedScriptsEvalResults ->
 
-            compiledScript.otherScripts.mapSuccess {
-                invoke(it, configuration)
-            }.onSuccess { importedScriptsEvalResults ->
+                    val refinedEvalConfiguration =
+                        scriptEvaluationConfiguration.refineBeforeEvaluation(compiledScript).valueOr {
+                            return@invoke ResultWithDiagnostics.Failure(it.reports)
+                        }
 
-                val refinedEvalConfiguration =
-                    configuration.refineBeforeEvaluation(compiledScript).valueOr {
-                        return@invoke ResultWithDiagnostics.Failure(it.reports)
+                    val resultValue = try {
+                        val instance =
+                            scriptClass.evalWithConfigAndOtherScriptsResults(refinedEvalConfiguration, importedScriptsEvalResults)
+
+                        compiledScript.resultField?.let { (resultFieldName, resultType) ->
+                            val resultField = scriptClass.java.getDeclaredField(resultFieldName).apply { isAccessible = true }
+                            ResultValue.Value(resultFieldName, resultField.get(instance), resultType.typeName, scriptClass, instance)
+                        } ?: ResultValue.Unit(scriptClass, instance)
+
+                    } catch (e: InvocationTargetException) {
+                        ResultValue.Error(e.targetException ?: e, e, scriptClass)
                     }
 
-                val resultValue = try {
-                    val instance =
-                        scriptClass.evalWithConfigAndOtherScriptsResults(refinedEvalConfiguration, importedScriptsEvalResults)
-
-                    compiledScript.resultField?.let { (resultFieldName, resultType) ->
-                        val resultField = scriptClass.java.getDeclaredField(resultFieldName).apply { isAccessible = true }
-                        ResultValue.Value(resultFieldName, resultField.get(instance), resultType.typeName, scriptClass, instance)
-                    } ?: ResultValue.Unit(scriptClass, instance)
-
-                } catch (e: InvocationTargetException) {
-                    ResultValue.Error(e.targetException ?: e, e, scriptClass)
+                    EvaluationResult(resultValue, refinedEvalConfiguration).let { ResultWithDiagnostics.Success(it) }
                 }
-
-                EvaluationResult(resultValue, refinedEvalConfiguration).let { ResultWithDiagnostics.Success(it) }
             }
+        } catch (e: Throwable) {
+            ResultWithDiagnostics.Failure(
+                e.asDiagnostics(path = compiledScript.sourceLocationId)
+            )
         }
-    } catch (e: Throwable) {
-        ResultWithDiagnostics.Failure(
-            e.asDiagnostics(path = compiledScript.sourceLocationId)
-        )
     }
 
     private fun KClass<*>.evalWithConfigAndOtherScriptsResults(

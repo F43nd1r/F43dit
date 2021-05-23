@@ -1,7 +1,7 @@
 package com.faendir.om.dsl
 
+import com.faendir.om.parser.solution.model.Solution
 import com.faendir.om.sekt.OmScript
-import com.faendir.om.sp.solution.Solution
 import kotlinx.coroutines.runBlocking
 import java.security.*
 import java.security.cert.Certificate
@@ -66,8 +66,8 @@ object DslCompiler {
         return result.onSuccess {
             when(val returnValue = it.returnValue) {
                 is ResultValue.Value -> ResultWithDiagnostics.Success(returnValue.value as Solution)
-                is ResultValue.Error -> ResultWithDiagnostics.Failure(listOf(ScriptDiagnostic("Evaluation failed", severity = ScriptDiagnostic.Severity.ERROR, exception = returnValue.error)))
-                else -> ResultWithDiagnostics.Failure(listOf(ScriptDiagnostic("Unknown eval result", severity = ScriptDiagnostic.Severity.ERROR)))
+                is ResultValue.Error -> ResultWithDiagnostics.Failure(listOf(ScriptDiagnostic(1000, "Evaluation failed", severity = ScriptDiagnostic.Severity.ERROR, exception = returnValue.error)))
+                else -> ResultWithDiagnostics.Failure(listOf(ScriptDiagnostic(2000, "Unknown eval result", severity = ScriptDiagnostic.Severity.ERROR)))
             }
         }
     }

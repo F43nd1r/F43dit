@@ -1,9 +1,10 @@
 package com.faendir.om.dsl.api
 
 import com.faendir.om.dsl.OmDsl
-import com.faendir.om.sp.part.*
-import com.faendir.om.sp.solution.NonSolvedSolution
-import com.faendir.om.sp.solution.Solution
+import com.faendir.om.parser.solution.model.NonSolvedSolution
+import com.faendir.om.parser.solution.model.Position
+import com.faendir.om.parser.solution.model.Solution
+import com.faendir.om.parser.solution.model.part.*
 
 @OmDsl
 fun solution(initializer: SolutionBuilder.() -> Unit): Solution {
@@ -23,35 +24,35 @@ class SolutionBuilder(var puzzle: String = "", var name: String = "", internal v
 
     @OmDsl
     fun arm(type: ArmType, initializer: Arm.() -> Unit) {
-        val arm = Arm((parts.map { it.number }.max() ?: 0) + 1, 0 to 0, 0, 1, emptyList(), type)
+        val arm = Arm((parts.map { it.number }.maxOrNull() ?: 0) + 1, Position(0, 0), 0, 1, emptyList(), type)
         arm.initializer()
         parts += arm
     }
 
     @OmDsl
     fun glyph(type: GlyphType, initializer: Glyph.() -> Unit) {
-        val glyph = Glyph(0 to 0, 0, type)
+        val glyph = Glyph(Position(0, 0), 0, type)
         glyph.initializer()
         parts += glyph
     }
 
     @OmDsl
     fun io(type: IOType, initializer: IO.() -> Unit) {
-        val glyph = IO(0, 0 to 0, 0, type)
+        val glyph = IO(0, Position(0, 0), 0, type)
         glyph.initializer()
         parts += glyph
     }
 
     @OmDsl
     fun track(initializer: Track.() -> Unit) {
-        val track = Track(0 to 0, listOf(0 to 0))
+        val track = Track(Position(0, 0), listOf(Position(0, 0)))
         track.initializer()
         parts += track
     }
 
     @OmDsl
     fun conduit(initializer: Conduit.() -> Unit) {
-        val conduit = Conduit(0 to 0, 0, 100, listOf(0 to 0))
+        val conduit = Conduit(Position(0, 0), 0, 100, listOf(Position(0, 0)))
         conduit.initializer()
         parts += conduit
     }

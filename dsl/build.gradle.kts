@@ -1,54 +1,20 @@
 plugins {
-    kotlin("jvm")
-    `maven-publish`
+    kotlin
+    `publish-maven`
 }
 
-group = "com.faendir.om"
-version = "1.1.5"
-
-repositories {
-    jcenter()
-    maven { setUrl("https://dl.bintray.com/f43nd1r/maven") }
-}
+version = "1.2.0"
 
 dependencies {
-    api("com.faendir.om:omsp:1.3.4")
-    implementation("com.faendir.om:scriptdef:1.0.2")
-    implementation(kotlin("stdlib-jdk8"))
+    api("com.faendir.om:parser:2.0.1")
+    implementation(project(":scriptdef"))
     api(kotlin("scripting-jvm-host"))
     implementation(kotlin("scripting-compiler"))
 }
 
-tasks {
-    compileKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-    compileTestKotlin {
-        kotlinOptions.jvmTarget = "1.8"
-    }
-}
-
-val sourcesJar by tasks.creating(Jar::class) {
-    archiveClassifier.set("sources")
-    from(sourceSets.getByName("main").allSource)
-}
-
 publishing {
-    repositories {
-        mavenLocal()
-        maven {
-            setUrl("https://api.bintray.com/maven/f43nd1r/maven/om-dsl/;publish=1")
-            name = "bintray"
-            credentials {
-                username = findProperty("artifactoryUser") as String?
-                password = findProperty("artifactoryApiKey") as String?
-            }
-        }
-    }
     publications {
-        create<MavenPublication>("maven") {
-            from(components["kotlin"])
-            artifact(sourcesJar)
+        getByName<MavenPublication>("maven") {
             pom {
                 name.set("dsl")
                 description.set("Opus Magnum Solution Dsl")
