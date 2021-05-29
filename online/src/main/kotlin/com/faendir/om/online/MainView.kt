@@ -1,9 +1,13 @@
 package com.faendir.om.online
 
 import com.faendir.om.dsl.DslGenerator
+import com.faendir.om.dsl.api.ArmRepresentation
+import com.faendir.om.dsl.api.Step
+import com.faendir.om.dsl.api.Tape
 import com.faendir.om.online.remote.RemoteResult
 import com.faendir.om.online.remote.RemoteServer
 import com.faendir.om.parser.solution.SolutionParser
+import com.faendir.om.parser.solution.model.part.*
 import com.vaadin.flow.component.AttachEvent
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.button.Button
@@ -48,6 +52,19 @@ class MainView : FlexLayout(), AppShellConfigurator {
     private val editor = AceEditor().apply {
         theme = AceTheme.ambiance
         mode = AceMode.kotlin
+        isAutoComplete = true
+        isLiveAutocompletion = true
+        setCustomAutoCompletion((
+                listOf(Arm::class, Conduit::class, Glyph::class, IO::class, Track::class)
+                    .flatMap { type -> type.java.declaredFields.map { it.name } + type.simpleName!!.toLowerCase() }
+                        + ArmType.values().map { it.name }
+                        + GlyphType.values().map { it.name }
+                        + IOType.values().map { it.name }
+                        + listOf(Tape::class, Step::class, ArmRepresentation::class)
+                    .flatMap { type -> type.java.declaredMethods.map { it.name } }
+                        + listOf("tape", "to")
+                ).toSet().toTypedArray(), true)
+        isEnableSnippets = true
         style["font"] = "monospace"
         fontSize = 16
         setHeightFull()
@@ -107,7 +124,7 @@ class MainView : FlexLayout(), AppShellConfigurator {
                                                     }
                                                 )
                                             )
-                                            dialog.add(Button("Close") { dialog.close()}.apply { setWidthFull() })
+                                            dialog.add(Button("Close") { dialog.close() }.apply { setWidthFull() })
                                         }
                                     }
                                 }
