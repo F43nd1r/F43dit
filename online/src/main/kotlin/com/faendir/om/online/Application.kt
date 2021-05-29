@@ -1,5 +1,6 @@
 package com.faendir.om.online
 
+import com.vaadin.flow.spring.annotation.EnableVaadin
 import org.springframework.boot.SpringApplication
 import org.springframework.boot.autoconfigure.SpringBootApplication
 

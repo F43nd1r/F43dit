@@ -3,9 +3,7 @@ package com.faendir.om.online
 import com.faendir.om.dsl.DslGenerator
 import com.faendir.om.online.remote.RemoteResult
 import com.faendir.om.online.remote.RemoteServer
-import com.faendir.om.sp.SolutionParser
-import com.juicy.JuicyAceEditor
-import com.juicy.theme.JuicyAceTheme
+import com.faendir.om.parser.solution.SolutionParser
 import com.vaadin.flow.component.AttachEvent
 import com.vaadin.flow.component.Text
 import com.vaadin.flow.component.button.Button
@@ -17,60 +15,53 @@ import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.component.orderedlayout.FlexLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
+import com.vaadin.flow.component.page.AppShellConfigurator
 import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
-import com.vaadin.flow.server.*
+import com.vaadin.flow.server.AppShellSettings
+import com.vaadin.flow.server.InputStreamFactory
+import com.vaadin.flow.server.StreamResource
+import com.vaadin.flow.server.VaadinSession
 import com.vaadin.flow.spring.annotation.SpringComponent
-import com.vaadin.flow.spring.annotation.UIScope
 import com.vaadin.flow.theme.lumo.Lumo
+import de.f0rce.ace.AceEditor
+import de.f0rce.ace.enums.AceMode
+import de.f0rce.ace.enums.AceTheme
 import kotlinx.io.streams.asInput
+import org.springframework.beans.factory.config.ConfigurableBeanFactory
+import org.springframework.context.annotation.Scope
 import java.io.ByteArrayInputStream
 import java.security.PrivilegedActionException
 import java.util.concurrent.TimeoutException
 
 @PageTitle("F43dit")
-@UIScope
+@Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @SpringComponent
 @Push
 @Route("")
-class MainView : FlexLayout(), PageConfigurator {
+class MainView : FlexLayout(), AppShellConfigurator {
     private var currentFileName: String = "generated.solution"
-    private val editor = JuicyAceEditor()
-    private val downloadText = Anchor()
+    private val editor = AceEditor().apply {
+        theme = AceTheme.ambiance
+        mode = AceMode.kotlin
+        style["font"] = "monospace"
+        fontSize = 16
+        setHeightFull()
+        expand(this)
+    }
+    private val downloadText = Anchor().apply {
+        setWidthFull()
+        add(Button("Download text").apply { setWidthFull() })
+    }
+    private val uploadContainer = Div().apply { setWidthFull() }
 
     init {
         setSizeFull()
-        editor.element.style["font"] = "monospace"
-        editor.element.setAttribute("mode", "ace/mode/kotlin")
-        editor.setTheme(JuicyAceTheme.ambiance)
-        editor.setFontsize(16)
-        editor.setHeightFull()
-        expand(editor)
         val logo = Image("logo.png", "F43dit")
-        val buffer = MemoryBuffer()
-        val upload = Upload(buffer)
-        upload.setWidthFull()
-        upload.style["box-sizing"] = "border-box"
-        upload.addFinishedListener {
-            try {
-                if (it.fileName.endsWith(".solution")) {
-                    val solution = SolutionParser.parse(buffer.inputStream.asInput())
-                    editor.value = DslGenerator.toDsl(solution)
-                    currentFileName = it.fileName
-                } else if (it.fileName.endsWith(".solution.kts")) {
-                    editor.value = buffer.inputStream.bufferedReader().readText()
-                    currentFileName = it.fileName.removeSuffix(".kts")
-                }
-                updateDownloadText()
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Notification.show("Failed to parse file.").addThemeVariants(NotificationVariant.LUMO_ERROR)
-            }
-        }
         val downloadDialog = Button("Download solution...") {
             val dialog = Dialog(Text("Please wait while your solution is generated"), ProgressBar().apply { isIndeterminate = true })
             dialog.isCloseOnOutsideClick = false
@@ -116,6 +107,7 @@ class MainView : FlexLayout(), PageConfigurator {
                                                     }
                                                 )
                                             )
+                                            dialog.add(Button("Close") { dialog.close()}.apply { setWidthFull() })
                                         }
                                     }
                                 }
@@ -136,12 +128,9 @@ class MainView : FlexLayout(), PageConfigurator {
             }
         }
         downloadDialog.setWidthFull()
-        downloadText.setWidthFull()
-        downloadText.add(Button("Download text").apply { setWidthFull() })
-        updateDownloadText()
         val help = Anchor("https://github.com/F43nd1r/omsekt/wiki/File-definition", "Reference")
         val spacer = Div()
-        val sidebar = VerticalLayout(logo, upload, downloadDialog, downloadText, spacer, help)
+        val sidebar = VerticalLayout(logo, uploadContainer, downloadDialog, downloadText, spacer, help)
         sidebar.expand(spacer)
         sidebar.setHeightFull()
         sidebar.width = null
@@ -155,13 +144,38 @@ class MainView : FlexLayout(), PageConfigurator {
     override fun onAttach(attachEvent: AttachEvent?) {
         ui.orElse(null)?.element?.setAttribute("theme", Lumo.DARK)
         super.onAttach(attachEvent)
+
+        val buffer = MemoryBuffer()
+        val upload = Upload(buffer)
+        upload.setWidthFull()
+        upload.style["box-sizing"] = "border-box"
+        upload.addFinishedListener {
+            try {
+                if (it.fileName.endsWith(".solution")) {
+                    val solution = SolutionParser.parse(buffer.inputStream.asInput())
+                    editor.value = DslGenerator.toDsl(solution)
+                    currentFileName = it.fileName
+                } else if (it.fileName.endsWith(".solution.kts")) {
+                    editor.value = buffer.inputStream.bufferedReader().readText()
+                    currentFileName = it.fileName.removeSuffix(".kts")
+                }
+                updateDownloadText()
+            } catch (e: Exception) {
+                e.printStackTrace()
+                Notification.show("Failed to parse file.").addThemeVariants(NotificationVariant.LUMO_ERROR)
+            }
+        }
+        uploadContainer.removeAll()
+        uploadContainer.add(upload)
+
+        updateDownloadText()
     }
 
-    override fun configurePage(settings: InitialPageSettings) {
-        settings.loadingIndicatorConfiguration.apply {
-            firstDelay = 2000
-            secondDelay = 5000
-            thirdDelay = 10000
+    override fun configurePage(settings: AppShellSettings) {
+        settings.loadingIndicatorConfiguration.ifPresent {
+            it.firstDelay = 2000
+            it.secondDelay = 5000
+            it.thirdDelay = 10000
         }
     }
 }

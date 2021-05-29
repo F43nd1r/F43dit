@@ -6,10 +6,10 @@ plugins {
 version = "1.2.0"
 
 dependencies {
-    api("com.faendir.om:parser:2.0.1")
+    api("com.faendir.om:parser:2.0.3")
     implementation(project(":scriptdef"))
     api(kotlin("scripting-jvm-host"))
-    implementation(kotlin("scripting-compiler"))
+    api(kotlin("scripting-compiler"))
 }
 
 publishing {

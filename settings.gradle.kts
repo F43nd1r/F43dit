@@ -1,4 +1,4 @@
 include("scriptdef")
 include("dsl")
-//include("online")
+include("online")
 //include("main")

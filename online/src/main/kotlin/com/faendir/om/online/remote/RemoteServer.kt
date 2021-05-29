@@ -1,15 +1,11 @@
 package com.faendir.om.online.remote
 
-import com.faendir.om.sp.solution.Solution
 import kotlinx.coroutines.GlobalScope
 import kotlinx.coroutines.launch
-import java.lang.RuntimeException
 import java.rmi.registry.LocateRegistry
 import java.rmi.server.UnicastRemoteObject
 import java.util.*
 import java.util.concurrent.TimeoutException
-import kotlin.script.experimental.api.ResultWithDiagnostics
-import kotlin.script.experimental.api.ScriptDiagnostic
 
 object RemoteServer : UnicastRemoteObject(), RemoteInterface {
     private val work = mutableMapOf<UUID, String>()

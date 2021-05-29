@@ -1,46 +1,54 @@
+import org.springframework.boot.gradle.tasks.bundling.BootJar
+
 plugins {
     kotlin
     id("org.springframework.boot") version "2.5.0"
-    id("com.devsoap.vaadin-flow") version "1.5.1"
+    id("com.vaadin")
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
     id("com.palantir.docker") version "0.26.0"
 }
 
-version = "1.1.0"
+version = "1.2.0"
 
 vaadin {
-    version = "14.5.4"
+    pnpmEnable = true
+    productionMode = true
 }
 
-repositories {
-    maven { setUrl("https://maven.vaadin.com/vaadin-addons") }
-    maven { setUrl("https://oss.sonatype.org/content/repositories/vaadin-snapshots") }
-    maven { setUrl("https://maven.vaadin.com/vaadin-prereleases") }
+dependencyManagement {
+    imports {
+        mavenBom("com.vaadin:vaadin-bom:${project.properties["vaadinVersion"]}")
+    }
 }
 
 dependencies {
-    implementation("org.springframework.boot:spring-boot-starter")
-    implementation("org.springframework.boot:spring-boot-starter-web")
+    implementation("com.vaadin:vaadin-spring-boot-starter") {
+        listOf(
+            "com.vaadin.webjar",
+            "org.webjars.bowergithub.insites",
+            "org.webjars.bowergithub.polymer",
+            "org.webjars.bowergithub.polymerelements",
+            "org.webjars.bowergithub.vaadin",
+            "org.webjars.bowergithub.webcomponents"
+        ).forEach { group -> exclude(group = group) }
+    }
+    developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.71")
-    implementation("com.faendir.om:dsl:1.1.5")
-    implementation(vaadin.bom())
-    implementation(vaadin.core())
-    implementation(vaadin.dependency("spring-boot-starter"))
-    implementation("com.juicy:juicyaceeditor:1.0.9")
+    implementation(project(":dsl"))
+    implementation("de.f0rce:ace:1.2.1")
 }
 
 java {
     sourceCompatibility = JavaVersion.VERSION_1_8
 }
 
-val unpackBootJar = tasks.register<Copy>("unpackBootJar") {
-    //from(zipTree(tasks.findByName("bootJar")?.outputs?.files?.get(0)))
-    into("$buildDir/dependency")
-    dependsOn("bootJar")
-}
-
 docker {
     name = "f43nd1r/omsekt:latest"
-    //files(unpackBootJar.outputs, "java.policy")
-    //dependsOn(unpackBootJar)
+    dependsOn(tasks.findByName("bootJar"))
+    copySpec.into(".") {
+        into("build/libs") {
+            from(tasks.getByName<BootJar>("bootJar").outputs)
+        }
+        from("java.policy")
+    }
 }

@@ -2,7 +2,7 @@ package com.faendir.om.online.remote
 
 import com.faendir.om.dsl.DslCompiler
 import com.faendir.om.online.SyntaxException
-import com.faendir.om.sp.SolutionParser
+import com.faendir.om.parser.solution.SolutionParser
 import kotlinx.io.streams.asOutput
 import java.io.ByteArrayOutputStream
 import java.io.PrintWriter
