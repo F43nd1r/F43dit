@@ -61,8 +61,8 @@ class MainView : FlexLayout(), AppShellConfigurator {
                         + GlyphType.values().map { it.name }
                         + IOType.values().map { it.name }
                         + listOf(Tape::class, Step::class, ArmRepresentation::class)
-                    .flatMap { type -> type.java.declaredMethods.map { it.name } }
-                        + listOf("tape", "to")
+                    .flatMap { type -> type.java.declaredMethods.map { it.name } }.minus("wait0")
+                        + listOf("tape", "to", "listOf")
                 ).toSet().toTypedArray(), true)
         isEnableSnippets = true
         style["font"] = "monospace"

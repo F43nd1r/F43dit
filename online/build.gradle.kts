@@ -8,8 +8,6 @@ plugins {
     id("com.palantir.docker") version "0.26.0"
 }
 
-version = "1.2.0"
-
 vaadin {
     pnpmEnable = true
     productionMode = true
@@ -52,4 +50,9 @@ docker {
         }
         from("java.policy")
     }
+}
+
+tasks.register("publish") {
+    group = "publishing"
+    dependsOn("dockerPush")
 }

@@ -19,6 +19,8 @@ dependencies {
     implementation("io.github.gradle-nexus:publish-plugin:$nexusPublishVersion")
     val vaadinPluginVersion: String by project
     implementation("com.vaadin:vaadin-gradle-plugin:$vaadinPluginVersion")
+    val jgitverVersion: String by project
+    implementation("gradle.plugin.fr.brouillard.oss.gradle:gradle-jgitver-plugin:$jgitverVersion")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
