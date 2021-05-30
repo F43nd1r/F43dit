@@ -3,8 +3,6 @@ plugins {
     `publish-maven`
 }
 
-version = "1.1.0"
-
 dependencies {
     implementation(kotlin("scripting-jvm"))
     implementation(kotlin("script-util"))
