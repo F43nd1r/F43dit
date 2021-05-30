@@ -12,6 +12,8 @@ jobs:
 
     steps:
       - uses: actions/checkout@v2.3.4
+        with:
+          ref: ${{ github.ref }}
       - uses: actions/setup-java@v2
         with:
           distribution: 'adopt'

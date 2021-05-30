@@ -10,10 +10,6 @@ application {
     mainClass.set("com.faendir.om.cli.MainKt")
 }
 
-tasks.withType<com.github.jengelman.gradle.plugins.shadow.tasks.ShadowJar> {
-    archiveBaseName.set("F43dit")
-}
-
 dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.2")
     implementation(project(":dsl"))
@@ -24,6 +20,10 @@ githubRelease {
     owner("F43nd1r")
     repo("F43dit")
     releaseAssets(tasks.getByName("shadowDistTar").outputs, tasks.getByName("shadowDistZip").outputs)
+}
+
+tasks.withType<AbstractArchiveTask> {
+    archiveBaseName.set("F43dit")
 }
 
 tasks.register("publish") {
