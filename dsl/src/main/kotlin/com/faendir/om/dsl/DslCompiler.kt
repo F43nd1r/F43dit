@@ -26,11 +26,14 @@ object DslCompiler {
         //java
         add(ClassLoadingPermission("java.util.*"))
         //api
-        add(ClassLoadingPermission("com.faendir.om.sp.part.*"))
+        add(ClassLoadingPermission("com.faendir.om.parser.solution.model.*"))
+        add(ClassLoadingPermission("com.faendir.om.parser.solution.model.part.*"))
         add(ClassLoadingPermission("com.faendir.om.dsl.api.*"))
         //script
         add(ClassLoadingPermission("com.faendir.om.sekt.OmScript"))
         add(ClassLoadingPermission("com.faendir.om.script.generated.*"))
+        //compiler
+        add(RuntimePermission("createClassLoader"))
     })))
     private val classLoader by lazy { AccessController.doPrivileged(PrivilegedAction { SecureClassLoader(DslCompiler::class.java.classLoader) }) }
 

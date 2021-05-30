@@ -36,6 +36,7 @@ dependencies {
     implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.71")
     implementation(project(":dsl"))
     implementation("de.f0rce:ace:1.2.1")
+    implementation("io.github.classgraph:classgraph:4.8.106")
 }
 
 java {
