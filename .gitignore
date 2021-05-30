@@ -4,3 +4,7 @@ build
 node_modules
 .idea
 target
+docker-compose-debug.yml
+pnpmfile.js
+pnpm-lock.yaml
+webpack.generated.js

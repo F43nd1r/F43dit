@@ -58,6 +58,7 @@ object DslGenerator {
                         id = ${part.id}
                         position = ${part.position.x} to ${part.position.y}
                         rotation = ${part.rotation}
+                        positions = listOf(${part.positions.joinToString(", ") { "${it.x} to ${it.y}" }})
                     }
                 """
                 else -> throw IllegalArgumentException("Unknown part type $part")
