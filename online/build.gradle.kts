@@ -2,10 +2,10 @@ import org.springframework.boot.gradle.tasks.bundling.BootJar
 
 plugins {
     kotlin
-    id("org.springframework.boot") version "2.5.0"
+    id("org.springframework.boot") version "2.5.4"
     id("com.vaadin")
     id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("com.palantir.docker") version "0.26.0"
+    id("com.palantir.docker") version "0.28.0"
 }
 
 vaadin {
@@ -31,10 +31,9 @@ dependencies {
         ).forEach { group -> exclude(group = group) }
     }
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8:1.3.71")
     implementation(project(":dsl"))
-    implementation("de.f0rce:ace:1.2.1")
-    implementation("io.github.classgraph:classgraph:4.8.106")
+    implementation("de.f0rce:ace:1.3.3")
+    implementation("io.github.classgraph:classgraph:4.8.115")
 }
 
 java {
