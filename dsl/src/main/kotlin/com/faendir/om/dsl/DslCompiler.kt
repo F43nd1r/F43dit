@@ -23,6 +23,7 @@ object DslCompiler {
         add(ClassLoadingPermission("kotlin.jvm.functions.*"))
         add(ClassLoadingPermission("kotlin.Unit"))
         add(ClassLoadingPermission("kotlin.collections.*"))
+        add(ClassLoadingPermission("kotlin.ranges.*"))
         //java
         add(ClassLoadingPermission("java.util.*"))
         //api
