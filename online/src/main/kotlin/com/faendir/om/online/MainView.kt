@@ -35,11 +35,13 @@ import com.vaadin.flow.theme.lumo.Lumo
 import de.f0rce.ace.AceEditor
 import de.f0rce.ace.enums.AceMode
 import de.f0rce.ace.enums.AceTheme
-import kotlinx.io.streams.asInput
+import okio.buffer
+import okio.source
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Scope
 import java.io.ByteArrayInputStream
 import java.security.PrivilegedActionException
+import java.util.*
 import java.util.concurrent.TimeoutException
 
 @PageTitle("F43dit")
@@ -56,7 +58,7 @@ class MainView : FlexLayout(), AppShellConfigurator {
         isLiveAutocompletion = true
         setCustomAutoCompletion((
                 listOf(Arm::class, Conduit::class, Glyph::class, IO::class, Track::class)
-                    .flatMap { type -> type.java.declaredFields.map { it.name } + type.simpleName!!.toLowerCase() }
+                    .flatMap { type -> type.java.declaredFields.map { it.name } + type.simpleName!!.lowercase() }
                         + ArmType.values().map { it.name }
                         + GlyphType.values().map { it.name }
                         + IOType.values().map { it.name }
@@ -169,7 +171,7 @@ class MainView : FlexLayout(), AppShellConfigurator {
         upload.addFinishedListener {
             try {
                 if (it.fileName.endsWith(".solution")) {
-                    val solution = SolutionParser.parse(buffer.inputStream.asInput())
+                    val solution = SolutionParser.parse(buffer.inputStream.source().buffer())
                     editor.value = DslGenerator.toDsl(solution)
                     currentFileName = it.fileName
                 } else if (it.fileName.endsWith(".solution.kts")) {

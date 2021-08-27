@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    api("com.faendir.om:parser:2.0.3")
+    api("com.faendir.om:parser:2.1.8")
     implementation(project(":scriptdef"))
     api(kotlin("scripting-jvm"))
     api(kotlin("scripting-jvm-host"))

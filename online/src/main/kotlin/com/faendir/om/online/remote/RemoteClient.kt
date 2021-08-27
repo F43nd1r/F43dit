@@ -3,7 +3,8 @@ package com.faendir.om.online.remote
 import com.faendir.om.dsl.DslCompiler
 import com.faendir.om.online.SyntaxException
 import com.faendir.om.parser.solution.SolutionParser
-import kotlinx.io.streams.asOutput
+import okio.buffer
+import okio.sink
 import java.io.ByteArrayOutputStream
 import java.io.PrintWriter
 import java.io.StringWriter
@@ -24,7 +25,7 @@ class RemoteClient {
                     val remoteResult = when (val result = DslCompiler.fromDsl(dsl)) {
                         is ResultWithDiagnostics.Success -> {
                             val out = ByteArrayOutputStream()
-                            SolutionParser.write(result.value, out.asOutput())
+                            SolutionParser.write(result.value, out.sink().buffer())
                             RemoteResult.Success(out.toByteArray())
                         }
                         is ResultWithDiagnostics.Failure -> {
