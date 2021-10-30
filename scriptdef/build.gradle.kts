@@ -5,8 +5,6 @@ plugins {
 
 dependencies {
     implementation(kotlin("scripting-jvm"))
-    implementation(kotlin("script-util"))
-    implementation(kotlin("compiler"))
 }
 
 publishing {
