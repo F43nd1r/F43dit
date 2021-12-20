@@ -33,7 +33,8 @@ dependencies {
     developmentOnly("org.springframework.boot:spring-boot-devtools")
     implementation(project(":dsl"))
     implementation("de.f0rce:ace:1.3.3")
-    implementation("io.github.classgraph:classgraph:4.8.115")
+    implementation("io.github.classgraph:classgraph:4.8.138")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 }
 
 java {

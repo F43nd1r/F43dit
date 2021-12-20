@@ -25,6 +25,7 @@ object DslCompiler {
         add(ClassLoadingPermission("kotlin.collections.*"))
         add(ClassLoadingPermission("kotlin.ranges.*"))
         //java
+        add(ClassLoadingPermission("java.lang.*"))
         add(ClassLoadingPermission("java.util.*"))
         //api
         add(ClassLoadingPermission("com.faendir.om.parser.solution.model.*"))

@@ -1,7 +1,7 @@
 plugins {
     kotlin
     application
-    id("com.github.johnrengelman.shadow") version "7.0.0"
+    id("com.github.johnrengelman.shadow") version "7.1.1"
     id("com.github.breadmoirai.github-release") version "2.2.12"
 }
 
@@ -11,7 +11,7 @@ application {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.2")
+    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
     implementation(project(":dsl"))
 }
 

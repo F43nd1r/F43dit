@@ -10,6 +10,9 @@ dependencies {
     api(kotlin("scripting-jvm-host"))
     api(kotlin("scripting-common"))
     api(kotlin("scripting-compiler-embeddable"))
+    implementation("com.squareup:kotlinpoet:1.11.0-SNAPSHOT")
+    implementation("com.faendir:kotlinbard:0.4.1")
+    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
 }
 
 publishing {

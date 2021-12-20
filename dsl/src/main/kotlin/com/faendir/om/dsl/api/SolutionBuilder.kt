@@ -4,6 +4,7 @@ import com.faendir.om.dsl.OmDsl
 import com.faendir.om.parser.solution.model.NonSolvedSolution
 import com.faendir.om.parser.solution.model.Position
 import com.faendir.om.parser.solution.model.Solution
+import com.faendir.om.parser.solution.model.SolvedSolution
 import com.faendir.om.parser.solution.model.part.*
 
 @OmDsl
@@ -18,9 +19,24 @@ fun Solution.toBuilder(initializer: SolutionBuilder.() -> Unit = {}): SolutionBu
 }
 
 @OmDsl
-class SolutionBuilder(var puzzle: String = "", var name: String = "", internal val parts: MutableList<Part> = mutableListOf()) {
+class ScoreBuilder(var cost: Int? = null, var cycles: Int? = null, var area: Int? = null, var instructions: Int? = null) {
+    constructor(solution: SolvedSolution) : this(solution.cost, solution.cycles, solution.area, solution.instructions)
+}
 
-    constructor(solution: Solution) : this(solution.puzzle, solution.name, solution.parts.toMutableList())
+@OmDsl
+class SolutionBuilder(var puzzle: String = "", var name: String = "", private val score: ScoreBuilder = ScoreBuilder(), internal val parts: MutableList<Part> = mutableListOf()) {
+
+    constructor(solution: Solution) : this(
+        solution.puzzle,
+        solution.name,
+        if (solution is SolvedSolution) ScoreBuilder(solution) else ScoreBuilder(),
+        solution.parts.toMutableList()
+    )
+
+    @OmDsl
+    fun score(initializer: ScoreBuilder.() -> Unit) {
+        score.apply(initializer)
+    }
 
     @OmDsl
     fun arm(type: ArmType, initializer: Arm.() -> Unit) {
@@ -65,6 +81,14 @@ class SolutionBuilder(var puzzle: String = "", var name: String = "", internal v
     }
 
     fun build(): Solution {
-        return NonSolvedSolution(puzzle, name, parts.toList())
+        val cost = score.cost
+        val cycles = score.cycles
+        val area = score.area
+        val instructions = score.instructions
+        return if (cost != null && cycles != null && area != null && instructions != null) {
+            SolvedSolution(puzzle, name, cycles, cost, area, instructions, parts.toList())
+        } else {
+            NonSolvedSolution(puzzle, name, parts.toList())
+        }
     }
 }

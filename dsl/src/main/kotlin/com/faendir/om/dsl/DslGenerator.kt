@@ -2,87 +2,93 @@ package com.faendir.om.dsl
 
 import com.faendir.om.parser.solution.model.Action
 import com.faendir.om.parser.solution.model.Solution
+import com.faendir.om.parser.solution.model.SolvedSolution
 import com.faendir.om.parser.solution.model.part.*
+import com.squareup.kotlinpoet.FileSpec
+import com.squareup.kotlinpoet.joinToCode
+import io.github.enjoydambience.kotlinbard.codeBlock
+import io.github.enjoydambience.kotlinbard.controlFlow
 
 
 object DslGenerator {
     fun toDsl(solution: Solution): String {
-        val parts = solution.parts.sortedWith(compareBy({
-            when (it) {
-                is Arm -> 0
-                is Glyph -> 1
-                is IO -> 2
-                is Track -> 3
-                is Conduit -> 4
-                else -> 5
-            }
-        }, {
-            when (it) {
-                is Arm -> it.number
-                is Glyph -> it.type.ordinal
-                is IO -> it.index
-                is Conduit -> it.id
-                else -> 0
-            }
-        })).joinToString("\n") { part ->
-            when (part) {
-                is Arm -> """
-                        arm(${part.type.name}) {
-                            number = ${part.number}
-                            position = ${part.position.x} to ${part.position.y}
-                            rotation = ${part.rotation}
-                            size = ${part.size}
+        return FileSpec.scriptBuilder("")
+            .addCode(codeBlock {
+                controlFlow("solution") {
+                    addStatement("puzzle = %S", solution.puzzle)
+                    addStatement("name = %S", solution.name)
+                    if (solution is SolvedSolution) {
+                        controlFlow("score") {
+                            addStatement("cost = %L", solution.cost)
+                            addStatement("cycles = %L", solution.cycles)
+                            addStatement("area = %L", solution.area)
+                            addStatement("instructions = %L", solution.instructions)
                         }
-                    """
-                is Glyph -> """
-                    glyph(${part.type.name}) {
-                        position = ${part.position.x} to ${part.position.y}
-                        rotation = ${part.rotation}
                     }
-                """
-                is IO -> """
-                    io(${part.type.name}) {
-                        index = ${part.index}
-                        position = ${part.position.x} to ${part.position.y}
-                        rotation = ${part.rotation}
+                    for (part in solution.parts.sortedWith(compareBy({
+                        when (it) {
+                            is Arm -> 0
+                            is Glyph -> 1
+                            is IO -> 2
+                            is Track -> 3
+                            is Conduit -> 4
+                            else -> 5
+                        }
+                    }, {
+                        when (it) {
+                            is Arm -> it.number
+                            is Glyph -> it.type.ordinal
+                            is IO -> it.index
+                            is Conduit -> it.id
+                            else -> 0
+                        }
+                    }))) {
+                        when (part) {
+                            is Arm -> controlFlow("arm(%L)", part.type.name) {
+                                addStatement("number = %L", part.number)
+                                addStatement("position = %L to %L", part.position.x, part.position.y)
+                                addStatement("rotation = %L", part.rotation)
+                                addStatement("size = %L", part.size)
+                            }
+                            is Glyph -> controlFlow("glyph(%L)", part.type.name) {
+                                addStatement("position = %L to %L", part.position.x, part.position.y)
+                                addStatement("rotation = %L", part.rotation)
+                            }
+                            is IO -> controlFlow("io(%L)", part.type.name) {
+                                addStatement("index = %L", part.index)
+                                addStatement("position = %L to %L", part.position.x, part.position.y)
+                                addStatement("rotation = %L", part.rotation)
+                            }
+                            is Track -> controlFlow("track") {
+                                addStatement("position = %L to %L", part.position.x, part.position.y)
+                                addStatement("positions = listOf(%L)", part.positions.map { codeBlock("%L to %L", it.x, it.y) }.joinToCode(", "))
+                            }
+                            is Conduit -> controlFlow("conduit") {
+                                addStatement("id = %L", part.id)
+                                addStatement("position = %L to %L", part.position.x, part.position.y)
+                                addStatement("rotation = %L", part.rotation)
+                                addStatement("positions = listOf(%L)", part.positions.map { codeBlock("%L to %L", it.x, it.y) }.joinToCode(", "))
+                            }
+                            else -> throw IllegalArgumentException("Unknown part type $part")
+                        }
                     }
-                """
-                is Track -> """
-                    track {
-                        position = ${part.position.x} to ${part.position.y}
-                        positions = listOf(${part.positions.joinToString(", ") { "${it.x} to ${it.y}" }})
+                    controlFlow("tape") {
+                        addStatement("parallel(%L)", solution.parts.filterIsInstance<Arm>().map {
+                            codeBlock {
+                                controlFlow("") {
+                                    controlFlow("sequence(%L)", it.number) {
+                                        for (action in toMethodCalls(it.steps)) {
+                                            add("$action\n")
+                                        }
+                                    }
+                                }
+                            }
+                        }.joinToCode(","))
                     }
-                """
-                is Conduit -> """
-                    conduit {
-                        id = ${part.id}
-                        position = ${part.position.x} to ${part.position.y}
-                        rotation = ${part.rotation}
-                        positions = listOf(${part.positions.joinToString(", ") { "${it.x} to ${it.y}" }})
-                    }
-                """
-                else -> throw IllegalArgumentException("Unknown part type $part")
-            }.trimIndent()
-        }
-        val tape = solution.parts.filterIsInstance<Arm>().joinToString(", ", "parallel(", ")") {
-            """
-{
-    sequence(${it.number}) {
-${toMethodCalls(it.steps).joinToString("\n").prependIndent("        ")}
-    }
-}
-"""
-        }
-        return """
-solution {
-    puzzle = "${solution.puzzle}"
-    name = "${solution.name}"
-${parts.prependIndent("    ")}
-    tape {
-${tape.prependIndent("        ")}
-    }
-}
-"""
+                }
+            })
+            .build()
+            .toString()
     }
 }
 
