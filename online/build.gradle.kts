@@ -1,11 +1,12 @@
 import org.springframework.boot.gradle.tasks.bundling.BootJar
 
+@Suppress("DSL_SCOPE_VIOLATION") // TODO remove when https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 plugins {
     kotlin
-    id("org.springframework.boot") version "2.5.4"
-    id("com.vaadin")
-    id("io.spring.dependency-management") version "1.0.11.RELEASE"
-    id("com.palantir.docker") version "0.28.0"
+    alias(libs.plugins.spring.boot)
+    alias(libs.plugins.spring.dependencyManagement)
+    alias(libs.plugins.gradle.docker)
+    alias(libs.plugins.vaadin)
 }
 
 vaadin {
@@ -15,7 +16,7 @@ vaadin {
 
 dependencyManagement {
     imports {
-        mavenBom("com.vaadin:vaadin-bom:${project.properties["vaadinVersion"]}")
+        mavenBom(libs.vaadin.bom.get().toString())
     }
 }
 
@@ -31,10 +32,10 @@ dependencies {
         ).forEach { group -> exclude(group = group) }
     }
     developmentOnly("org.springframework.boot:spring-boot-devtools")
-    implementation(project(":dsl"))
-    implementation("de.f0rce:ace:1.3.3")
-    implementation("io.github.classgraph:classgraph:4.8.138")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    implementation(projects.dsl)
+    implementation(libs.ace)
+    implementation(libs.classgraph)
+    implementation(libs.kotlinx.coroutines)
 }
 
 java {

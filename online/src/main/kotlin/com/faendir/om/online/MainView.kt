@@ -26,10 +26,7 @@ import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer
 import com.vaadin.flow.router.PageTitle
 import com.vaadin.flow.router.Route
-import com.vaadin.flow.server.AppShellSettings
-import com.vaadin.flow.server.InputStreamFactory
-import com.vaadin.flow.server.StreamResource
-import com.vaadin.flow.server.VaadinSession
+import com.vaadin.flow.server.*
 import com.vaadin.flow.spring.annotation.SpringComponent
 import com.vaadin.flow.theme.lumo.Lumo
 import de.f0rce.ace.AceEditor
@@ -47,9 +44,8 @@ import java.util.concurrent.TimeoutException
 @PageTitle("F43dit")
 @Scope(scopeName = ConfigurableBeanFactory.SCOPE_PROTOTYPE)
 @SpringComponent
-@Push
 @Route("")
-class MainView : FlexLayout(), AppShellConfigurator {
+class MainView : FlexLayout(), UIInitListener {
     private var currentFileName: String = "generated.solution"
     private val editor = AceEditor().apply {
         theme = AceTheme.ambiance
@@ -190,11 +186,11 @@ class MainView : FlexLayout(), AppShellConfigurator {
         updateDownloadText()
     }
 
-    override fun configurePage(settings: AppShellSettings) {
-        settings.loadingIndicatorConfiguration.ifPresent {
-            it.firstDelay = 2000
-            it.secondDelay = 5000
-            it.thirdDelay = 10000
+    override fun uiInit(event: UIInitEvent) {
+        event.ui.loadingIndicatorConfiguration.apply {
+            firstDelay = 2000
+            secondDelay = 5000
+            thirdDelay = 10000
         }
     }
 }

@@ -4,15 +4,14 @@ plugins {
 }
 
 dependencies {
-    api("com.faendir.om:parser:2.1.8")
-    implementation(project(":scriptdef"))
-    api(kotlin("scripting-jvm"))
-    api(kotlin("scripting-jvm-host"))
-    api(kotlin("scripting-common"))
-    api(kotlin("scripting-compiler-embeddable"))
-    implementation("com.squareup:kotlinpoet:1.11.0-SNAPSHOT")
-    implementation("com.faendir:kotlinbard:0.4.1")
-    implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.2")
+    api(libs.om.parser)
+    implementation(projects.scriptdef)
+    api(libs.kotlin.scripting.jvm)
+    api(libs.kotlin.scripting.jvmHost)
+    api(libs.kotlin.scripting.compiler.embeddable)
+    implementation(libs.kotlinpoet)
+    implementation(libs.kotlinbard)
+    implementation(libs.kotlinx.coroutines)
 }
 
 publishing {
@@ -21,12 +20,12 @@ publishing {
             pom {
                 name.set("dsl")
                 description.set("Opus Magnum Solution Dsl")
-                url.set("https://github.com/F43nd1r/omsekt")
+                url.set("https://github.com/F43nd1r/F43dit")
 
                 scm {
-                    connection.set("scm:git:https://github.com/F43nd1r/omsekt.git")
-                    developerConnection.set("scm:git:git@github.com:F43nd1r/omsekt.git")
-                    url.set("https://github.com/F43nd1r/omsekt.git")
+                    connection.set("scm:git:https://github.com/F43nd1r/F43dit.git")
+                    developerConnection.set("scm:git:git@github.com:F43nd1r/F43dit.git")
+                    url.set("https://github.com/F43nd1r/F43dit.git")
                 }
 
                 licenses {

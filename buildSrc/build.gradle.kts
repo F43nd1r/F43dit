@@ -4,31 +4,26 @@ plugins {
 
 repositories {
     mavenCentral()
-    google()
     gradlePluginPortal()
-    maven { setUrl("https://maven.vaadin.com/vaadin-prereleases/")}
 }
 
 dependencies {
-    val kotlinVersion: String by project
-    implementation(kotlin("gradle-plugin:$kotlinVersion"))
-    val dokkaVersion: String by project
-    implementation("org.jetbrains.dokka:dokka-gradle-plugin:$dokkaVersion")
-    implementation("org.jetbrains.dokka:dokka-core:$dokkaVersion")
-    val nexusPublishVersion: String by project
-    implementation("io.github.gradle-nexus:publish-plugin:$nexusPublishVersion")
-    val vaadinPluginVersion: String by project
-    implementation("com.vaadin:vaadin-gradle-plugin:$vaadinPluginVersion")
-    val jgitverVersion: String by project
-    implementation("gradle.plugin.fr.brouillard.oss.gradle:gradle-jgitver-plugin:$jgitverVersion")
+    implementation(files(libs.javaClass.superclass.protectionDomain.codeSource.location))
+
+    implementation(libs.kotlin.gradle)
+    implementation(libs.dokka.gradle)
+    implementation(libs.dokka.core)
+    implementation(libs.jgitver)
+    implementation(libs.nexusPublish)
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompile> {
     kotlinOptions {
-        jvmTarget = "11"
+        jvmTarget = "1.8"
     }
 }
 
-kotlinDslPluginOptions {
-    experimentalWarning.set(false)
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
 }

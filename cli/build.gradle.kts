@@ -1,8 +1,9 @@
+@Suppress("DSL_SCOPE_VIOLATION") // TODO remove when https://youtrack.jetbrains.com/issue/KTIJ-19369 is fixed
 plugins {
     kotlin
     application
-    id("com.github.johnrengelman.shadow") version "7.1.1"
-    id("com.github.breadmoirai.github-release") version "2.2.12"
+    alias(libs.plugins.shadow)
+    alias(libs.plugins.githubRelease)
 }
 
 application {
@@ -11,8 +12,8 @@ application {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlinx:kotlinx-cli:0.3.4")
-    implementation(project(":dsl"))
+    implementation(libs.kotlinx.cli)
+    implementation(projects.dsl)
 }
 
 githubRelease {
