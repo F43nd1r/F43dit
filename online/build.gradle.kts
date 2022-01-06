@@ -43,7 +43,8 @@ java {
 }
 
 docker {
-    name = "f43nd1r/omsekt:latest"
+    name = "f43nd1r/omsek"
+    tag("latest", "docker.io/f43nd1r/omsekt")
     dependsOn(tasks.findByName("bootJar"))
     copySpec.into(".") {
         into("build/libs") {
