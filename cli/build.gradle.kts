@@ -1,3 +1,5 @@
+import com.github.breadmoirai.githubreleaseplugin.GithubReleaseTask
+
 plugins {
     kotlin
     application
@@ -19,7 +21,11 @@ githubRelease {
     token(project.findProperty("githubToken") as? String ?: System.getenv("GITHUB_TOKEN"))
     owner("F43nd1r")
     repo("F43dit")
-    releaseAssets(tasks.getByName("shadowDistTar").outputs, tasks.getByName("shadowDistZip").outputs)
+    releaseAssets(tasks.shadowDistTar, tasks.shadowDistZip)
+}
+
+tasks.withType<GithubReleaseTask> {
+    dependsOn(tasks.shadowDistTar, tasks.shadowDistZip)
 }
 
 tasks.withType<AbstractArchiveTask> {
@@ -28,5 +34,5 @@ tasks.withType<AbstractArchiveTask> {
 
 tasks.register("publish") {
     group = "publishing"
-    dependsOn("githubRelease")
+    dependsOn(tasks.githubRelease)
 }
