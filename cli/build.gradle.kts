@@ -25,7 +25,7 @@ githubRelease {
 }
 
 tasks.withType<GithubReleaseTask> {
-    dependsOn(tasks.shadowDistTar, tasks.shadowDistZip)
+    dependsOn(tasks.shadowDistTar, tasks.shadowDistZip, tasks.distTar, tasks.distZip)
 }
 
 tasks.withType<AbstractArchiveTask> {
