@@ -100,7 +100,7 @@
     "@vaadin/theme-live-reload-plugin": "./build/plugins/theme-live-reload-plugin",
     "@vaadin/theme-loader": "./build/plugins/theme-loader",
     "chokidar": "^3.5.0",
-    "compression-webpack-plugin": "4.0.1",
+    "compression-webpack-plugin": "10.0.0",
     "css-loader": "4.2.1",
     "esbuild-loader": "2.15.1",
     "extra-watch-webpack-plugin": "1.0.3",
