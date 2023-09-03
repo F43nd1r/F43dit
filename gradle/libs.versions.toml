@@ -26,5 +26,5 @@ vaadin-bom = { module = "com.vaadin:vaadin-bom", version.ref = "vaadin" }
 om-parser = { module = "com.faendir.om:parser", version = "2.1.8" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version = "1.11.0-SNAPSHOT" }
 kotlinbard = { module = "com.faendir:kotlinbard", version = "0.4.1" }
-ace = { module = "de.f0rce:ace", version = "1.3.3"}
+ace = { module = "de.f0rce:ace", version = "3.4.2"}
 classgraph = {module = "io.github.classgraph:classgraph", version = "4.8.138"}
