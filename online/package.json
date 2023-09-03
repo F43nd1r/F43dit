@@ -108,7 +108,7 @@
     "file-loader": "6.2.0",
     "fork-ts-checker-webpack-plugin": "6.2.1",
     "glob": "7.1.6",
-    "html-webpack-plugin": "4.5.1",
+    "html-webpack-plugin": "5.5.3",
     "lit-css-loader": "0.1.0",
     "loader-utils": "2.0.0",
     "typescript": "4.4.3",
