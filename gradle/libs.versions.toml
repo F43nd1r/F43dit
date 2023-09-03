@@ -26,7 +26,7 @@ nexusPublish = { module = "io.github.gradle-nexus:publish-plugin", version = "1.
 vaadin-bom = { module = "com.vaadin:vaadin-bom", version.ref = "vaadin" }
 spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
 om-parser = { module = "com.faendir.om:parser", version = "2.1.9" }
-kotlinpoet = { module = "com.squareup:kotlinpoet", version = "1.11.0-SNAPSHOT" }
+kotlinpoet = { module = "com.squareup:kotlinpoet", version = "1.14.2" }
 kotlinbard = { module = "com.faendir:kotlinbard", version = "0.5.1" }
 ace = { module = "de.f0rce:ace", version = "3.4.2" }
 classgraph = { module = "io.github.classgraph:classgraph", version = "4.8.162" }
