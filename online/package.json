@@ -14,7 +14,7 @@
     "@vaadin/checkbox": "22.0.1",
     "@vaadin/checkbox-group": "22.0.1",
     "@vaadin/combo-box": "22.0.1",
-    "@vaadin/common-frontend": "0.0.17",
+    "@vaadin/common-frontend": "0.0.18",
     "@vaadin/context-menu": "22.0.1",
     "@vaadin/custom-field": "22.0.1",
     "@vaadin/date-picker": "22.0.1",
