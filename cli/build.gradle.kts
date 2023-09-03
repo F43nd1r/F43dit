@@ -22,6 +22,8 @@ githubRelease {
     owner("F43nd1r")
     repo("F43dit")
     releaseAssets(tasks.shadowDistTar, tasks.shadowDistZip)
+    generateReleaseNotes(true)
+    targetCommitish("master")
 }
 
 tasks.withType<GithubReleaseTask> {
