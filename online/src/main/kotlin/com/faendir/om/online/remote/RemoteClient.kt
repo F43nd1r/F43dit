@@ -16,7 +16,7 @@ class RemoteClient {
     companion object {
         @JvmStatic
         fun main(args: Array<String>?) {
-            if (args != null && args.isNotEmpty()) {
+            if (!args.isNullOrEmpty()) {
                 val id = args[0]
                 println("handling work $id")
                 val server = LocateRegistry.getRegistry("localhost", 1099).lookup(RemoteServer.NAME) as RemoteInterface
@@ -25,7 +25,7 @@ class RemoteClient {
                     val remoteResult = when (val result = DslCompiler.fromDsl(dsl)) {
                         is ResultWithDiagnostics.Success -> {
                             val out = ByteArrayOutputStream()
-                            SolutionParser.write(result.value, out.sink().buffer())
+                            SolutionParser.write(result.value, out.sink().buffer(), writeSolved = true)
                             RemoteResult.Success(out.toByteArray())
                         }
                         is ResultWithDiagnostics.Failure -> {

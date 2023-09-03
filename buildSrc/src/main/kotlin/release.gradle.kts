@@ -1,5 +1,4 @@
 plugins {
-    id("repositories")
     id("org.jetbrains.dokka")
     id("io.github.gradle-nexus.publish-plugin")
     id("fr.brouillard.oss.gradle.jgitver")
@@ -24,7 +23,7 @@ tasks.register("publish") {
 
 tasks.register<Delete>("clean") {
     group = "build"
-    delete = setOf(buildDir)
+    delete = setOf(layout.buildDirectory)
 }
 
 nexusPublishing {

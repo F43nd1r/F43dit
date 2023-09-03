@@ -2,13 +2,14 @@
 kotlin = "1.6.10"
 dokka = "1.6.0"
 vaadin = "24.1.7"
+springBoot = "3.1.3"
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.2.12" }
-spring-boot = { id = "org.springframework.boot", version = "3.1.3" }
+spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
 spring-dependencyManagement = { id = "io.spring.dependency-management", version = "1.0.11.RELEASE" }
-gradle-docker = { id = "com.palantir.docker", version = "0.31.0" }
+gradle-docker = { id = "com.palantir.docker", version = "0.35.0" }
 vaadin = { id = "com.vaadin", version.ref = "vaadin" }
 
 [libraries]
@@ -23,8 +24,9 @@ dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" 
 jgitver = { module = "gradle.plugin.fr.brouillard.oss.gradle:gradle-jgitver-plugin", version = "0.10.0-rc03" }
 nexusPublish = { module = "io.github.gradle-nexus:publish-plugin", version = "1.1.0" }
 vaadin-bom = { module = "com.vaadin:vaadin-bom", version.ref = "vaadin" }
-om-parser = { module = "com.faendir.om:parser", version = "2.1.8" }
+spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies", version.ref = "springBoot" }
+om-parser = { module = "com.faendir.om:parser", version = "2.1.9" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version = "1.11.0-SNAPSHOT" }
 kotlinbard = { module = "com.faendir:kotlinbard", version = "0.4.1" }
-ace = { module = "de.f0rce:ace", version = "3.4.2"}
-classgraph = {module = "io.github.classgraph:classgraph", version = "4.8.138"}
+ace = { module = "de.f0rce:ace", version = "3.4.2" }
+classgraph = { module = "io.github.classgraph:classgraph", version = "4.8.138" }

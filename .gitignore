@@ -8,3 +8,4 @@ docker-compose-debug.yml
 pnpmfile.js
 pnpm-lock.yaml
 webpack.generated.js
+/online/frontend/generated/

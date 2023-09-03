@@ -47,14 +47,14 @@ class SolutionBuilder(var puzzle: String = "", var name: String = "", private va
 
     @OmDsl
     fun glyph(type: GlyphType, initializer: Glyph.() -> Unit) {
-        val glyph = Glyph(Position(0, 0), 0, type)
+        val glyph = Glyph(Position(0, 0), 0, 1, type)
         glyph.initializer()
         parts += glyph
     }
 
     @OmDsl
     fun io(type: IOType, initializer: IO.() -> Unit) {
-        val glyph = IO(0, Position(0, 0), 0, type)
+        val glyph = IO(0, Position(0, 0), 0, 1, type)
         glyph.initializer()
         parts += glyph
     }

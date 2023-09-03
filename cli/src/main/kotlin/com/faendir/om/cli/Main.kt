@@ -21,7 +21,7 @@ fun main(args: Array<String>) {
         File(output ?: "$input.kts").writeText(DslGenerator.toDsl(SolutionParser.parse(File(input).inputStream().source().buffer())))
     } else if (input.endsWith(".solution.kts")) {
         when (val result = DslCompiler.fromDsl(File(input).readText())) {
-            is ResultWithDiagnostics.Success -> SolutionParser.write(result.value, File(output ?: input.removeSuffix(".kts")).outputStream().sink().buffer())
+            is ResultWithDiagnostics.Success -> SolutionParser.write(result.value, File(output ?: input.removeSuffix(".kts")).outputStream().sink().buffer(), writeSolved = true)
             is ResultWithDiagnostics.Failure -> println(result.reports.joinToString("\n"))
         }
 

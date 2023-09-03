@@ -19,8 +19,6 @@ import com.vaadin.flow.component.notification.Notification
 import com.vaadin.flow.component.notification.NotificationVariant
 import com.vaadin.flow.component.orderedlayout.FlexLayout
 import com.vaadin.flow.component.orderedlayout.VerticalLayout
-import com.vaadin.flow.component.page.AppShellConfigurator
-import com.vaadin.flow.component.page.Push
 import com.vaadin.flow.component.progressbar.ProgressBar
 import com.vaadin.flow.component.upload.Upload
 import com.vaadin.flow.component.upload.receivers.MemoryBuffer
@@ -36,9 +34,9 @@ import okio.buffer
 import okio.source
 import org.springframework.beans.factory.config.ConfigurableBeanFactory
 import org.springframework.context.annotation.Scope
+import org.springframework.http.MediaType
 import java.io.ByteArrayInputStream
 import java.security.PrivilegedActionException
-import java.util.*
 import java.util.concurrent.TimeoutException
 
 @PageTitle("F43dit")
@@ -52,16 +50,16 @@ class MainView : FlexLayout(), UIInitListener {
         mode = AceMode.kotlin
         isAutoComplete = true
         isLiveAutocompletion = true
-        setCustomAutoCompletion((
-                listOf(Arm::class, Conduit::class, Glyph::class, IO::class, Track::class)
-                    .flatMap { type -> type.java.declaredFields.map { it.name } + type.simpleName!!.lowercase() }
-                        + ArmType.values().map { it.name }
-                        + GlyphType.values().map { it.name }
-                        + IOType.values().map { it.name }
-                        + listOf(Tape::class, Step::class, ArmRepresentation::class)
-                    .flatMap { type -> type.java.declaredMethods.map { it.name } }.minus("wait0")
-                        + listOf("tape", "to", "listOf")
-                ).toSet().toTypedArray(), true)
+        addStaticWordCompleter(
+            listOf(Arm::class, Conduit::class, Glyph::class, IO::class, Track::class)
+                .flatMap { type -> type.java.declaredFields.map { it.name } + type.simpleName!!.lowercase() }
+                    + ArmType.values().map { it.name }
+                    + GlyphType.values().map { it.name }
+                    + IOType.values().map { it.name }
+                    + listOf(Tape::class, Step::class, ArmRepresentation::class)
+                .flatMap { type -> type.java.declaredMethods.map { it.name } }.minus("wait0")
+                    + listOf("tape", "to", "listOf")
+        )
         isEnableSnippets = true
         style["font"] = "monospace"
         fontSize = 16
@@ -87,10 +85,12 @@ class MainView : FlexLayout(), UIInitListener {
                     dialog.removeAll()
                     dialog.add(Text("Your solution is empty."))
                 }
+
                 session.getAttribute(HasActiveRequestMarker::class.java) != null -> {
                     dialog.removeAll()
                     dialog.add(Text("Only one request per user at the same time allowed."))
                 }
+
                 else -> {
                     session.setAttribute(HasActiveRequestMarker::class.java, HasActiveRequestMarker)
                     RemoteServer.fromDsl(editor.value) { result ->
@@ -98,16 +98,28 @@ class MainView : FlexLayout(), UIInitListener {
                             when (result) {
                                 is RemoteResult.Success -> {
                                     val solution = result.value
-                                    ui.ifPresent {
-                                        it.access {
-                                            val download = Anchor(StreamResource(currentFileName, InputStreamFactory { ByteArrayInputStream(solution) }), "")
-                                            download.add(Button("Download") { dialog.close() }.apply { setWidthFull() })
+                                    ui.ifPresent { ui ->
+                                        ui.access {
+                                            val download = Anchor(StreamResource(currentFileName, InputStreamFactory { ByteArrayInputStream(solution) }).apply {
+                                                setContentType(MediaType.APPLICATION_OCTET_STREAM_VALUE)
+                                                setHeader("Content-Disposition", "attachment; filename=$currentFileName")
+                                            }, "")
+                                            val button = Button("Download") {
+                                                // vaadin throws away the resource on detach, so we need to wait a bit
+                                                Thread {
+                                                    Thread.sleep(50)
+                                                    ui.access { dialog.close() }
+                                                }.start()
+                                            }
+                                            button.addAttachListener { button.clickInClient() }
+                                            download.add(button.apply { setWidthFull() })
                                             download.element.setAttribute("download", true)
                                             dialog.removeAll()
                                             dialog.add(download)
                                         }
                                     }
                                 }
+
                                 is RemoteResult.Failure -> {
                                     ui.ifPresent { ui ->
                                         ui.access {
