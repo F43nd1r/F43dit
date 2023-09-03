@@ -25,24 +25,7 @@ object DslGenerator {
                             addStatement("instructions = %L", solution.instructions)
                         }
                     }
-                    for (part in solution.parts.sortedWith(compareBy({
-                        when (it) {
-                            is Arm -> 0
-                            is Glyph -> 1
-                            is IO -> 2
-                            is Track -> 3
-                            is Conduit -> 4
-                            else -> 5
-                        }
-                    }, {
-                        when (it) {
-                            is Arm -> it.number
-                            is Glyph -> it.type.ordinal
-                            is IO -> it.index
-                            is Conduit -> it.id
-                            else -> 0
-                        }
-                    }))) {
+                    for (part in solution.parts) {
                         when (part) {
                             is Arm -> controlFlow("arm(%L)", part.type.name) {
                                 addStatement("number = %L", part.number)
