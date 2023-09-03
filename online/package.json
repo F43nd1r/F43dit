@@ -23,7 +23,7 @@
     "@vaadin/dialog": "22.0.1",
     "@vaadin/email-field": "22.0.1",
     "@vaadin/flow-frontend": "./build/flow-frontend",
-    "@vaadin/form": "0.0.15",
+    "@vaadin/form": "0.0.17",
     "@vaadin/form-layout": "22.0.1",
     "@vaadin/fusion-frontend": "0.0.15",
     "@vaadin/grid": "22.0.1",
