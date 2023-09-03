@@ -23,7 +23,7 @@ dokka-core = { module = "org.jetbrains.dokka:dokka-core", version.ref = "dokka" 
 jgitver = { module = "gradle.plugin.fr.brouillard.oss.gradle:gradle-jgitver-plugin", version = "0.10.0-rc03" }
 nexusPublish = { module = "io.github.gradle-nexus:publish-plugin", version = "1.1.0" }
 vaadin-bom = { module = "com.vaadin:vaadin-bom", version.ref = "vaadin" }
-om-parser = { module = "com.faendir.om:parser", version = "2.1.8" }
+om-parser = { module = "com.faendir.om:parser", version = "2.1.9" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version = "1.11.0-SNAPSHOT" }
 kotlinbard = { module = "com.faendir:kotlinbard", version = "0.4.1" }
 ace = { module = "de.f0rce:ace", version = "3.4.2"}
