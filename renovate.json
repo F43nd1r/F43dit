@@ -19,5 +19,5 @@
   "prHourlyLimit": 0,
   "prConcurrentLimit": 0,
   "branchConcurrentLimit": 0,
-  "ignorePaths": ["online/package.json"]
+  "ignorePaths": ["**/online/package.json"]
 }
