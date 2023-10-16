@@ -1,6 +1,6 @@
 [versions]
 kotlin = "1.9.10"
-dokka = "1.9.0"
+dokka = "1.9.10"
 vaadin = "24.1.12"
 springBoot = "3.1.4"
 
