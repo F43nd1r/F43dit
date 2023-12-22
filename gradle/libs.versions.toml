@@ -1,7 +1,7 @@
 [versions]
 kotlin = "1.9.22"
 dokka = "1.9.10"
-vaadin = "24.3.1"
+vaadin = "24.3.2"
 springBoot = "3.2.1"
 
 [plugins]
