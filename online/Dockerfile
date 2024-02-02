@@ -55,4 +55,4 @@ COPY java.policy java.policy
 RUN uid=$(($(($((`date +%s` / 60)) % 165535)) + 100000)) && adduser -D -h /application/ -u $uid f43dit && chown -R f43dit:f43dit /application
 USER f43dit
 
-ENTRYPOINT ["java","-Djava.security.manager", "-Djava.security.policy==java.policy", "org.springframework.boot.loader.JarLauncher"]
+ENTRYPOINT ["java","-Djava.security.manager", "-Djava.security.policy==java.policy", "org.springframework.boot.loader.launch.JarLauncher"]
