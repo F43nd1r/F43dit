@@ -1,7 +1,7 @@
 import com.faendir.gradle.createWithBomSupport
 
 plugins {
-    id("com.faendir.gradle.bom-version-catalog") version "1.5.0"
+    id("com.faendir.gradle.bom-version-catalog") version "1.5.1"
 }
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
