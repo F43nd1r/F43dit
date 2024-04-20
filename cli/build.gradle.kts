@@ -19,11 +19,11 @@ dependencies {
 
 githubRelease {
     token(project.findProperty("githubToken") as? String ?: System.getenv("GITHUB_TOKEN"))
-    owner("F43nd1r")
-    repo("F43dit")
+    owner.set("F43nd1r")
+    repo.set("F43dit")
     releaseAssets(tasks.shadowDistTar, tasks.shadowDistZip)
-    generateReleaseNotes(true)
-    targetCommitish("master")
+    generateReleaseNotes.set(true)
+    targetCommitish.set("master")
 }
 
 tasks.withType<GithubReleaseTask> {
