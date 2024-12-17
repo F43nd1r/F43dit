@@ -8,7 +8,7 @@ springBoot = "3.4.0"
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
 githubRelease = { id = "com.github.breadmoirai.github-release", version = "2.5.2" }
 spring-boot = { id = "org.springframework.boot", version.ref = "springBoot" }
-spring-dependencyManagement = { id = "io.spring.dependency-management", version = "1.1.6" }
+spring-dependencyManagement = { id = "io.spring.dependency-management", version = "1.1.7" }
 gradle-docker = { id = "com.palantir.docker", version = "0.36.0" }
 vaadin = { id = "com.vaadin", version.ref = "vaadin" }
 
