@@ -2,7 +2,7 @@
 kotlin = "2.1.0"
 dokka = "1.9.20"
 vaadin = "24.6.0"
-springBoot = "3.4.0"
+springBoot = "3.4.1"
 
 [plugins]
 shadow = { id = "com.github.johnrengelman.shadow", version = "8.1.1" }
