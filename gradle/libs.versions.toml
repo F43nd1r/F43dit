@@ -1,5 +1,5 @@
 [versions]
-kotlin = "2.2.10"
+kotlin = "2.2.20"
 dokka = "1.9.20"
 vaadin = "24.8.8"
 springBoot = "3.5.5"
