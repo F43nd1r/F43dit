@@ -28,5 +28,5 @@ spring-boot-bom = { module = "org.springframework.boot:spring-boot-dependencies"
 om-parser = { module = "com.faendir.om:parser", version = "2.1.12" }
 kotlinpoet = { module = "com.squareup:kotlinpoet", version = "1.18.1" }
 kotlinbard = { module = "com.faendir:kotlinbard", version = "0.6.0" }
-ace = { module = "de.f0rce:ace", version = "3.4.2" }
+ace = { module = "de.f0rce:ace", version = "4.0.0" }
 classgraph = { module = "io.github.classgraph:classgraph", version = "4.8.184" }
